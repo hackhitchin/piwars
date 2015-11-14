@@ -1,9 +1,11 @@
+#!/usr/bin/env python
 import numpy as np
 import cv2
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import threading
+import logging
 
 
 class LedTrack(object):
@@ -278,8 +280,8 @@ if __name__ == '__main__':
         time.sleep(1.0)
         tracked, angle_in_degs, size = tracker.get_current_led_pos()
         if tracked:
-            print("size = " + str(size) + "Angle = " + str(angle_in_degs))
+            logging.info("size = {0}, Angle = {1}".format(size, angle_in_degs))
         else:
-            print("Not found")
+            logging.info("Not found")
 
     tracker.stop_tracker()
