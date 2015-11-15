@@ -9,15 +9,15 @@ from numpy import interp, clip
 pwm = PWM(0x40, debug=False)
 pwm.setPWMFreq(50)
 
+
 def set_servo_pulse(channel, pulse):
-    pulseLength = 1000000 # 1,000,000 us per second
-    pulseLength /= 50 #  60 Hz
-    print "%d us per period" % pulseLength
-    pulseLength /= 4096 # 12 bits of resolution
-    print "%d us per bit" % pulseLength
-    # pulse *= 1000
+    # 1,000,000 us per second
+    pulseLength = 1000000
+    #  60 Hz
+    pulseLength /= 50
+    # 12 bits of resolution
+    pulseLength /= 4096
     pulse /= pulseLength
-    print "pulse {0}".format(pulse)
     pwm.setPWM(channel, 0, pulse)
 
 print("Press 1+2 on your Wiimote now...")
@@ -43,14 +43,16 @@ wm.led = 1
 #activate the servos
 SERVO_LEFT_CHANNEL = 0
 SERVO_RIGHT_CHANNEL = 1
-SERVO_MIN = 900
-SERVO_MAX = 2100
-SERVO_MID = ((SERVO_MAX - SERVO_MIN) / 2) + SERVO_MIN
+SERVO_MIN = 670
+SERVO_MAX = 1870
+SERVO_MID = 1270
 
 while True:
     print wm.state
     buttons = wm.state['buttons']
-    if (buttons & cwiid.BTN_1):
+    if 'nunchuk' not in wm.state:
+        print('no nunchuk found - continuing')
+    elif (buttons & cwiid.BTN_1):
         print("min")
         set_servo_pulse(SERVO_LEFT_CHANNEL, SERVO_MIN)
         set_servo_pulse(SERVO_RIGHT_CHANNEL, SERVO_MIN)
@@ -64,17 +66,35 @@ while True:
         set_servo_pulse(SERVO_RIGHT_CHANNEL, SERVO_MID)
     else:
         acc_throttle = clip(wm.state['nunchuk']['stick'][1], 50, 200)
-        pulse_throttle = int(interp(acc_throttle, [50, 200], [SERVO_MIN, SERVO_MAX]))
+        pulse_throttle = int(
+            interp(
+                acc_throttle,
+                [50, 200],
+                [SERVO_MIN, SERVO_MAX]
+            )
+        )
         acc_steering = clip(wm.state['nunchuk']['stick'][0], 50, 200)
-        pulse_steering = int(interp(acc_steering, [50, 200], [SERVO_MIN, SERVO_MAX]))
+        pulse_steering = int(
+            interp(
+                acc_steering,
+                [50, 200],
+                [SERVO_MIN, SERVO_MAX]
+            )
+        )
 
-        # LeftESC.write(constrain((-throttleSignal + steeringSignal) / 2 + 1500, ESC_OUTPUT_MIN, ESC_OUTPUT_MAX));
-        # RightESC.write(constrain((throttleSignal + steeringSignal) / 2, ESC_OUTPUT_MIN, ESC_OUTPUT_MAX));
-        
-        
-        set_servo_pulse(SERVO_LEFT_CHANNEL, clip((-pulse_throttle + pulse_steering)/2 + SERVO_MID, SERVO_MIN, SERVO_MAX))
-        set_servo_pulse(SERVO_RIGHT_CHANNEL, clip((pulse_throttle + pulse_steering)/2, SERVO_MIN, SERVO_MAX))
+        output_pulse_left = clip(
+            (-pulse_throttle + pulse_steering) / 2 + SERVO_MID,
+            SERVO_MIN,
+            SERVO_MAX
+        )
+        output_pulse_right = clip(
+            (pulse_throttle + pulse_steering) / 2,
+            SERVO_MIN,
+            SERVO_MAX
+        )
+        print "stick position: {0}, {1}".format(acc_throttle, pulse_throttle)
+        print "output pulse left: {0} output pulse right : {1}".format(output_pulse_left, output_pulse_right)
+        set_servo_pulse(SERVO_LEFT_CHANNEL, output_pulse_left)
+        set_servo_pulse(SERVO_RIGHT_CHANNEL, output_pulse_right)
 
-        #set_servo_pulse(SERVO_LEFT_CHANNEL, pulse_throttle)
-        #set_servo_pulse(SERVO_RIGHT_CHANNEL, pulse_throttle)
     time.sleep(0.05)
