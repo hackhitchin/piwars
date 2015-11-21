@@ -81,35 +81,47 @@ class rc:
                     self.motors.set_neutral()
             else:
                 # Get stick position
-                stick_pos_accel = clip(self.wm.state['nunchuk']['stick'][1], 50, 200)
+                stick_pos_throttle = clip(self.wm.state['nunchuk']['stick'][1], 50, 200)
+                stick_pos_steering = clip(self.wm.state['nunchuk']['stick'][0], 50, 200)
+
+                # joystick and motor power ranges
+                min_stick_range = 50
+                max_stick_range = 200;
+                min_motor_range = -100.0
+                max_motor_range = 100.0;
+
                 # Convert stick position to range (-100, 100)
-                pulse_throttle = int(
+                throttle_scaled = int(
                     interp(
-                        stick_pos_accel,
-                        [50, 200],
-                        [-100.0, 100.0]
+                        stick_pos_throttle,
+                        [min_stick_range, max_stick_range],
+                        [min_motor_range, max_motor_range]
                     )
                 )
-                # Get stick position
-                stick_pos_steering = clip(self.wm.state['nunchuk']['stick'][0], 50, 200)
                 # Convert stick position to range (-100, 100)
-                pulse_steering = int(
+                steering_scaled = int(
                     interp(
                         stick_pos_steering,
-                        [50, 200],
-                        [-100.0, 100.0]
+                        [min_stick_range, max_stick_range],
+                        [min_motor_range, max_motor_range]
                     )
                 )
 
                 # Clip the throttle and steering speeds to the range (-100, 100)
-                motor_left = clip( (-pulse_throttle + pulse_steering) / 2, -100.0, 100.0 )
-                motor_right = clip( (pulse_throttle + pulse_steering) / 2, -100.0, 100.0 )
-                print "stick position: {0}, {1}".format(acc_throttle, pulse_throttle)
-                print "motor speed left: {0} motor speed right : {1}".format(motor_left, motor_right)
-                self.motors.set_motor_speed(True, motor_left)
-                self.motors.set_motor_speed(False, motor_right)
+                #motor_left = clip( (-pulse_throttle + pulse_steering) / 2, -100.0, 100.0 )
+                #motor_right = clip( (pulse_throttle + pulse_steering) / 2, -100.0, 100.0 )
+                self.skid_steering(throttle_scaled, steering_scaled)
 
             time.sleep(0.05)
+
+    def skid_steering(self, throttle_scaled, steering_scaled):
+        # mix throttle and direction
+        print "stick position: Throttle " + str(throttle_scaled) + ' Steering  ' + str(steering_scaled)
+        motor_left =  clip((throttle_scaled + steering_scaled) / 2, -100.0, 100.0);
+        motor_right = clip((throttle_scaled - steering_scaled) / 2, -100.0, 100.0);
+        print "motor position: Left Motor " + str(motor_left) + ' Right Motor ' + str(motor_right)
+        self.motors.set_motor_speed(True, motor_left)
+        self.motors.set_motor_speed(False, motor_right)
 
 if  __name__ =='__main__':
     mc = motors.motors()
