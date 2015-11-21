@@ -1,32 +1,14 @@
 #!/usr/bin/env python
 import cwiid
 import time
-from libs.Adafruit_PWM_Servo_Driver import PWM
+import motors
 from numpy import interp, clip
 
-# activate the servos
-SERVO_LEFT_CHANNEL = 0
-SERVO_RIGHT_CHANNEL = 1
-SERVO_MIN = 670
-SERVO_MAX = 1870
-SERVO_MID = 1270
-
 class rc:
-    def __init__(self):
-        # Configure PWM
-        self.pwm = PWM(0x40, debug=False)
-        self.pwm.setPWMFreq(50)
+    def __init__(self, mc):
+        # Initialise remote control class
+        self.motors = mc
         self.wm = None
-
-    def set_servo_pulse(self, channel, pulse):
-        # 1,000,000 us per second
-        pulseLength = 1000000
-        #  60 Hz
-        pulseLength /= 50
-        # 12 bits of resolution
-        pulseLength /= 4096
-        pulse /= pulseLength
-        self.pwm.setPWM(channel, 0, pulse)
 
     def connect_wii_mote(self):
         # Connect to a waiting wii remote
@@ -44,11 +26,6 @@ class rc:
                 print "Error opening wiimote connection"
                 print "attempt " + str(i)
                 i += 1
-
-    def rc_neutral(self):
-        # Set the servos to middle position
-        self.set_servo_pulse(SERVO_LEFT_CHANNEL, SERVO_MID)
-        self.set_servo_pulse(SERVO_RIGHT_CHANNEL, SERVO_MID)
 
     def rc_loop(self):
         # Main loop that listens to the wii remote control
@@ -77,62 +54,64 @@ class rc:
             elif (buttons & cwiid.BTN_1):
                 # Button 1 pressed
                 print("min")
-                self.set_servo_pulse(SERVO_LEFT_CHANNEL, SERVO_MIN)
-                self.set_servo_pulse(SERVO_RIGHT_CHANNEL, SERVO_MIN)
+                if self.motors:
+                    self.motors.set_motor_speed(True, -100.0)
+                    self.motors.set_motor_speed(False, -100.0)
             elif (buttons & cwiid.BTN_2):
                 # Button 2 pressed
                 print("max")
-                self.set_servo_pulse(SERVO_LEFT_CHANNEL, SERVO_MAX)
-                self.set_servo_pulse(SERVO_RIGHT_CHANNEL, SERVO_MAX)
+                if self.motors:
+                    self.motors.set_motor_speed(True, 100.0)
+                    self.motors.set_motor_speed(False, 100.0)
             elif (buttons & cwiid.BTN_A):
                 # Button A pressed
                 print("A")
             elif (buttons & cwiid.BTN_B):
                 # Button B pressed
                 print("stop")
-                self.rc_neutral()
+                if self.motors:
+                    self.motors.set_neutral()
             elif (nunchuk_buttons & cwiid.NUNCHUK_BTN_C):
                 # Button C pressed
                 print("C")
             elif (nunchuk_buttons & cwiid.NUNCHUK_BTN_Z):
                 # Button Z pressed
                 print("stop")
-                self.rc_neutral()
+                if self.motors:
+                    self.motors.set_neutral()
             else:
-                acc_throttle = clip(self.wm.state['nunchuk']['stick'][1], 50, 200)
+                # Get stick position
+                stick_pos_accel = clip(self.wm.state['nunchuk']['stick'][1], 50, 200)
+                # Convert stick position to range (-100, 100)
                 pulse_throttle = int(
                     interp(
-                        acc_throttle,
+                        stick_pos_accel,
                         [50, 200],
-                        [SERVO_MIN, SERVO_MAX]
+                        [-100.0, 100.0]
                     )
                 )
-                acc_steering = clip(self.wm.state['nunchuk']['stick'][0], 50, 200)
+                # Get stick position
+                stick_pos_steering = clip(self.wm.state['nunchuk']['stick'][0], 50, 200)
+                # Convert stick position to range (-100, 100)
                 pulse_steering = int(
                     interp(
-                        acc_steering,
+                        stick_pos_steering,
                         [50, 200],
-                        [SERVO_MIN, SERVO_MAX]
+                        [-100.0, 100.0]
                     )
                 )
 
-                output_pulse_left = clip(
-                    (-pulse_throttle + pulse_steering) / 2 + SERVO_MID,
-                    SERVO_MIN,
-                    SERVO_MAX
-                )
-                output_pulse_right = clip(
-                    (pulse_throttle + pulse_steering) / 2,
-                    SERVO_MIN,
-                    SERVO_MAX
-                )
+                # Clip the throttle and steering speeds to the range (-100, 100)
+                motor_left = clip( (-pulse_throttle + pulse_steering) / 2, -100.0, 100.0 )
+                motor_right = clip( (pulse_throttle + pulse_steering) / 2, -100.0, 100.0 )
                 print "stick position: {0}, {1}".format(acc_throttle, pulse_throttle)
-                print "output pulse left: {0} output pulse right : {1}".format(output_pulse_left, output_pulse_right)
-                self.set_servo_pulse(SERVO_LEFT_CHANNEL, output_pulse_left)
-                self.set_servo_pulse(SERVO_RIGHT_CHANNEL, output_pulse_right)
+                print "motor speed left: {0} motor speed right : {1}".format(motor_left, motor_right)
+                self.motors.set_motor_speed(True, motor_left)
+                self.motors.set_motor_speed(False, motor_right)
 
             time.sleep(0.05)
 
 if  __name__ =='__main__':
-    rc_control = rc()
+    mc = motors.motors()
+    rc_control = rc(mc)
     rc_control.rc_loop()
