@@ -1,75 +1,69 @@
-#!/usr/bin/env python
 import cwiid
-import time
-from libs.Adafruit_PWM_Servo_Driver import PWM
-from numpy import interp, clip
+import logging
 
-#connecting to the wiimote. This allows several attempts
-# as first few often fail.
-pwm = PWM(0x40, debug=False)
-pwm.setPWMFreq(50)
-#servos.setPWM(15,4095)
-
-def set_servo_pulse(channel, pulse):
-    pulseLength = 1000000 # 1,000,000 us per second
-    pulseLength /= 50 #  60 Hz
-    print "%d us per period" % pulseLength
-    pulseLength /= 4096 # 12 bits of resolution
-    print "%d us per bit" % pulseLength
-    # pulse *= 1000
-    pulse /= pulseLength
-    print "pulse {0}".format(pulse)
-    pwm.setPWM(channel, 0, pulse)
+from numpy import clip
 
 
+class WiimoteException(Exception):
+    pass
 
-print("Press 1+2 on your Wiimote now...")
-wm = None
-i = 2
-while not wm:
-    try:
-        wm = cwiid.Wiimote()
-    except RuntimeError:
-        if i > 5:
-            print("cannot create connection")
-#            servos.setPWM(15,0)
-            quit()
-        print "Error opening wiimote connection"
-        print "attempt " + str(i)
-        i += 1
 
-#set wiimote to report button presses and accelerometer state
-wm.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
+class WiimoteNunchukException(WiimoteException):
+    pass
 
-#turn on led to show connected
-wm.led = 1
 
-#activate the servos
-# servos.setPWM(15,0)
-# servos.setSpeeds(0,0)
-#print state every second
-SERVO_MIN = 900
-SERVO_MAX = 2100
-SERVO_MID = ((SERVO_MAX - SERVO_MIN) / 2) + SERVO_MIN
+class Wiimote():
+    """Wrapper class for the wiimote interaction"""
+    def __init__(
+        self,
+        max_tries=5,
+        joystick_range=None
+    ):
+        self.joystick_range = joystick_range if joystick_range else [50, 200]
+        self.wm = None
+        attempts = 0
 
-while True:
-    # print wm.state
-    buttons = wm.state['buttons']
-    if (buttons & cwiid.BTN_1):
-        print((wm.state['acc'][1]-125))
-       # servos.setSpeeds((speedModifier - wm.state['acc'][1]),wm.state['acc'][1] -speedModifier2)
-        # set_servo_pulse( (speedModifier - wm.state['acc'][1]),wm.state['acc'][1] -speedModifier2)
-        set_servo_pulse(0, SERVO_MIN)
-    elif (buttons & cwiid.BTN_2):
-        print ~(wm.state['acc'][1]-125)
-        #servos.setSpeeds(~(speedModifier - wm.state['acc'][1]),~(wm.state['acc'][1] -speedModifier2))
-        # set_servo_pulse(~(speedModifier - wm.state['acc'][1]),~(wm.state['acc'][1] -speedModifier2))
-        set_servo_pulse(0, SERVO_MAX)
-    elif (buttons & cwiid.BTN_B):
-        print("stop")
-        set_servo_pulse(0, SERVO_MID)
-    else:
-        acc = clip(wm.state['acc'][1], 100, 150)
-        pulse = int(interp(acc, [100, 150], [SERVO_MIN, SERVO_MAX]))
-        set_servo_pulse(0, pulse)
-    time.sleep(0.05)
+        logging.info("Press 1+2 on your Wiimote now...")
+
+        # Attempt to get a connection to the wiimote
+        # try a few times, as it can take a few attempts
+        while not self.wm:
+            try:
+                self.wm = cwiid.Wiimote()
+            except RuntimeError:
+                if attempts == max_tries:
+                    logging.info("cannot create connection")
+                    raise WiimoteException("Could not create connection within {0} tries".format(max_tries))
+                logging.info("Error opening wiimote connection")
+                logging.info("attempt {0}".format(attempts))
+                attempts += 1
+
+        # set wiimote to report button presses and accelerometer state
+        self.wm.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC | cwiid.RPT_EXT
+
+        # Set led state
+        self.wm.led = 1
+
+    def get_state(self):
+        return self.wm.state if self.wm else None
+
+    def get_joystick_state(self, clip_values=True):
+        """Return a tuple of the joystick state and the min/max range"""
+        if not 'nunchuk' in self.get_state():
+            logging.info("state: {0}".format(self.get_state()))
+            return None, None
+        else:
+            joystick_state = self.wm.state['nunchuk']['stick']
+            if clip_values:
+                joystick_state = [
+                    clip(channel, 50, 200)
+                    for channel
+                    in joystick_state
+                ]
+
+            return joystick_state, self.joystick_range
+
+    def get_buttons(self):
+        buttons_state = self.wm.state['buttons']
+
+        return buttons_state
