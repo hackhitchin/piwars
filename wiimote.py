@@ -1,7 +1,7 @@
 import cwiid
 import logging
 
-from numpy import clip
+from numpy import clip, interp
 
 
 class WiimoteException(Exception):
@@ -51,21 +51,31 @@ class Wiimote():
     def get_state(self):
         return self.wm.state if self.wm else None
 
-    def get_joystick_state(self, clip_values=True):
+    def get_joystick_state(self):
         """Return a tuple of the joystick state and the min/max range"""
         if not 'nunchuk' in self.get_state():
             logging.info("state: {0}".format(self.get_state()))
-            return None, None
+            return None
         else:
-            joystick_state = self.wm.state['nunchuk']['stick']
-            if clip_values:
-                joystick_state = [
-                    clip(channel, *self.joystick_range)
-                    for channel
-                    in joystick_state
-                ]
-
-            return joystick_state, self.joystick_range
+            joystick_state_raw = self.wm.state['nunchuk']['stick']
+            joystick_state_clipped = [
+                clip(channel, *self.joystick_range)
+                for channel
+                in joystick_state_raw
+            ]
+            joystick_state_normalised = [
+                interp(channel, self.joystick_range, [-1, 1])
+                for channel
+                in joystick_state_raw
+            ]
+            return dict(
+                range=self.joystick_range,
+                state=dict(
+                    raw=joystick_state_raw,
+                    clipped=joystick_state_clipped,
+                    normalised=joystick_state_normalised
+                )
+            )
 
     def get_buttons(self):
         buttons_state = self.wm.state['buttons']
