@@ -33,7 +33,11 @@ class Wiimote():
             except RuntimeError:
                 if attempts == max_tries:
                     logging.info("cannot create connection")
-                    raise WiimoteException("Could not create connection within {0} tries".format(max_tries))
+                    raise WiimoteException(
+                        "Could not create connection within {0} tries".format(
+                            max_tries
+                        )
+                    )
                 logging.info("Error opening wiimote connection")
                 logging.info("attempt {0}".format(attempts))
                 attempts += 1
