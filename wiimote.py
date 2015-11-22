@@ -60,7 +60,7 @@ class Wiimote():
             joystick_state = self.wm.state['nunchuk']['stick']
             if clip_values:
                 joystick_state = [
-                    clip(channel, 50, 200)
+                    clip(channel, *self.joystick_range)
                     for channel
                     in joystick_state
                 ]
