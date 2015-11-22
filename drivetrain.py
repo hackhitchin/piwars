@@ -4,6 +4,8 @@ from numpy import interp, clip
 
 
 class DriveTrain():
+    """Instantiate a 2WD drivetrain, utilising 2x ESCs,
+    controlled using a 2 axis (throttle, steering) system"""
     def __init__(
         self,
         pwm_i2c=0x40,
@@ -25,6 +27,8 @@ class DriveTrain():
         self.pwm.setPWMFreq(pwm_freq)
 
     def set_servo_pulse(self, channel, pulse):
+        """Send a raw servo pulse length to a specific speed controller
+        channel"""
         # 1,000,000 us per second
         pulseLength = 1000000
         #  60 Hz
@@ -39,11 +43,17 @@ class DriveTrain():
         self.pwm.setPWM(channel, 0, pulse)
 
     def set_neutral(self):
+        """Send the neutral servo position to both motor controllers"""
         self.set_servo_pulse(self.channels['left'], self.servo_mid)
         self.set_servo_pulse(self.channels['right'], self.servo_mid)
 
     # TODO - flesh out setters for raw pulse values (both channels)
-    def mix_channels(self, pulse_throttle, pulse_steering):
+    def mix_channels_and_assign(self, throttle, steering):
+        """Take values for the throttle and steering channels in the range
+        -1 to 1, convert into servo pulses, and then mix the channels and
+        assign to the left/right motor controllers"""
+        pulse_throttle = self._map_channel_value(throttle)
+        pulse_steering = self._map_channel_value(steering)
         output_pulse_left = clip(
             (-pulse_throttle + pulse_steering) / 2 + self.servo_mid,
             self.servo_min,
@@ -65,11 +75,13 @@ class DriveTrain():
         self.set_servo_pulse(self.channels['left'], output_pulse_left)
         self.set_servo_pulse(self.channels['right'], output_pulse_right)
 
-    def map_channel_value(self, value, min_max_range):
+    def _map_channel_value(self, value):
+        """Map the supplied value from the range -1 to 1 to a corresponding
+        value within the range servo_min to servo_max"""
         return int(
             interp(
                 value,
-                min_max_range,
+                [-1, 1],
                 [self.servo_min, self.servo_max]
             )
         )

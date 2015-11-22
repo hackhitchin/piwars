@@ -20,33 +20,21 @@ def run():
         logging.error("Could not connect to wiimote. please try again")
     while wiimote:
         buttons_state = wiimote.get_buttons()
-        joystick_pos, joystick_range = wiimote.get_joystick_state()
+        joystick_state = wiimote.get_joystick_state()
 
-        logging.info("joystick_pos (clipped) {0}".format(joystick_pos))
+        logging.info("joystick_state: {0}".format(joystick_state))
         logging.info("button state {0}".format(buttons_state))
 
         # Test if B button is pressed
-        if joystick_pos is None or (buttons_state & cwiid.BTN_B):
+        if joystick_state is None or (buttons_state & cwiid.BTN_B):
             logging.info("B button presed - stopping")
             drive.set_neutral()
         else:
-            acc_throttle = joystick_pos[0]
-            pulse_throttle = drive.map_channel_value(
-                acc_throttle,
-                joystick_range
-            )
-            acc_steering = joystick_pos[1]
-            pulse_steering = drive.map_channel_value(
-                acc_steering,
-                joystick_range
-            )
-
-            drive.mix_channels(pulse_throttle, pulse_steering)
-            logging.info(
-                "stick position: {0}, {1}".format(
-                    acc_throttle, pulse_throttle
-                )
-            )
+            # Get the normalised joystick postion as a tuple of
+            # (throttle, steering), where values are in the range -1 to 1
+            joystick_pos = joystick_state['state']['normalised']
+            throttle, steering = joystick_pos
+            drive.mix_channels_and_assign(throttle, steering)
 
         time.sleep(0.05)
 
