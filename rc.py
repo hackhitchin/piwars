@@ -21,7 +21,6 @@ def run():
     while wiimote:
         buttons_state = wiimote.get_buttons()
         joystick_state = wiimote.get_joystick_state()
-        joystick_pos = joystick_state['state']['normalised']
 
         logging.info("joystick_state: {0}".format(joystick_state))
         logging.info("button state {0}".format(buttons_state))
@@ -31,6 +30,7 @@ def run():
             logging.info("B button presed - stopping")
             drive.set_neutral()
         else:
+            joystick_pos = joystick_state['state']['normalised']
             throttle, steering = joystick_pos
             drive.mix_channels(throttle, steering)
 
