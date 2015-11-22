@@ -6,6 +6,7 @@ from picamera import PiCamera
 import time
 import threading
 import logging
+import argparse
 
 
 class LedTrack(object):
@@ -17,7 +18,8 @@ class LedTrack(object):
         h_flip=True,
         v_flip=True,
         thresh_min=240,
-        thresh_max=255
+        thresh_max=255,
+        debug=False
     ):
         # Tuple of X and Y video resolution (320,240) default
         self.resolution = resolution
@@ -48,7 +50,7 @@ class LedTrack(object):
         # Flag set when we want the process to exit
         self.exit = False
         # Flag set when we want the visual output (note, must be run in X)
-        self.debug = True
+        self.debug = debug
 
     def get_current_led_pos(self):
         """ Return tracking status and horizontal position
@@ -68,7 +70,7 @@ class LedTrack(object):
             if tracked:
                 # Linearly interpolate angle from X pixel position
                 ratio = self.blob_pixel_pos / self.resolution[0]
-                angle_in_degs = (self.camera_h_fov * ratio) - (self.camera_h_fov/2.0)
+                angle_in_degs = (self.camera_h_fov * ratio) - (self.camera_h_fov / 2.0)
                 # Estimate distance to LED using blob pixel size
                 size = self.blob_pixel_size
         finally:
@@ -128,15 +130,16 @@ class LedTrack(object):
                 no_images_since_tracked = no_images_since_tracked+1
                 # If not tracked in a set number of images, reset tracked to False
                 if no_images_since_tracked >= self.max_tracked_gap:
-                    self.tracked = False # effectively lost tracking
+                    # effectively lost tracking
+                    self.tracked = False
             else:
                 # We found it, so flag it as tracked
                 self.tracked = True
 
             if self.debug:
                 # Draw detected blobs as red circles.
-                # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the
-                # circle corresponds to the size of blob
+                # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size
+                # of the circle corresponds to the size of blob
                 key_point_colour = (0, 0, 255)
                 image_key_points = cv2.drawKeypoints(
                     image_gray,
@@ -271,6 +274,10 @@ class LedTrack(object):
 if __name__ == '__main__':
     # If this module is run independantly, simply instantiate
     # the tracker class and kick off its tracking loop.
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('-debug', action='store_true', default=False)
+
     tracker = LedTrack()
     tracker.start_tracker()
 
