@@ -30,9 +30,11 @@ def run():
             logging.info("B button presed - stopping")
             drive.set_neutral()
         else:
+            # Get the normalised joystick postion as a tuple of
+            # (throttle, steering), where values are in the range -1 to 1
             joystick_pos = joystick_state['state']['normalised']
             throttle, steering = joystick_pos
-            drive.mix_channels(throttle, steering)
+            drive.mix_channels_and_assign(throttle, steering)
 
         time.sleep(0.05)
 

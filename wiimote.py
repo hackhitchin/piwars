@@ -49,10 +49,21 @@ class Wiimote():
         self.wm.led = 1
 
     def get_state(self):
+        """Get the full raw state of the wiimote.
+        Returns: dict"""
         return self.wm.state if self.wm else None
 
     def get_joystick_state(self):
-        """Return a tuple of the joystick state and the min/max range"""
+        """Returns a dictionary containing the state of the nunchuk joystick in the form:
+            {
+            "state": {
+                    "raw": tuple of the raw joystick readings from cwiid in the form (x, y),
+                    "clipped": tuple of the raw values, clipped to the min/max range,
+                    "normalised": the 'clipped' tuple, with the values mapped to the range -1 to 1
+                }
+            "range": The min/max range to clip raw values to
+            }
+        """
         if not 'nunchuk' in self.get_state():
             logging.info("state: {0}".format(self.get_state()))
             return None
@@ -78,6 +89,7 @@ class Wiimote():
             )
 
     def get_buttons(self):
+        """Get just the current button state of the wiimote"""
         buttons_state = self.wm.state['buttons']
 
         return buttons_state
