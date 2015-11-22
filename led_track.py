@@ -8,6 +8,9 @@ import threading
 import logging
 import argparse
 
+# Set up logging
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
 
 class LedTrack(object):
     """Detect and track led beacons"""
