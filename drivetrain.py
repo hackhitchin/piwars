@@ -43,7 +43,10 @@ class DriveTrain():
         self.set_servo_pulse(self.channels['right'], self.servo_mid)
 
     # TODO - flesh out setters for raw pulse values (both channels)
-    def mix_channels(self, pulse_throttle, pulse_steering):
+    def mix_channels(self, throttle, steering):
+
+        pulse_throttle = self._map_channel_value(throttle)
+        pulse_steering = self._map_channel_value(steering)
         output_pulse_left = clip(
             (-pulse_throttle + pulse_steering) / 2 + self.servo_mid,
             self.servo_min,
@@ -65,11 +68,11 @@ class DriveTrain():
         self.set_servo_pulse(self.channels['left'], output_pulse_left)
         self.set_servo_pulse(self.channels['right'], output_pulse_right)
 
-    def map_channel_value(self, value, min_max_range):
+    def _map_channel_value(self, value):
         return int(
             interp(
                 value,
-                min_max_range,
+                [-1, 1],
                 [self.servo_min, self.servo_max]
             )
         )
