@@ -40,8 +40,10 @@ def run(i2c=None):
         time.sleep(0.05)
 
 if __name__ == "__main__":
+    def auto_int(x):
+        return int(x, 0)
     parser = argparse.ArgumentParser(description='Radio Control TTOS.')
-    parser.add_argument('--i2c')
+    parser.add_argument('--i2c', type=auto_int)
     args = parser.parse_args()
     try:
         i2c = args.i2c if args.i2c else None
