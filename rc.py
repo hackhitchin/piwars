@@ -5,13 +5,14 @@ import logging
 import time
 import drivetrain
 from wiimote import Wiimote, WiimoteException
+import argparse
 
 
-def run():
+def run(i2c=None):
     # Set up logging
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     # Initiate the drivetrain
-    drive = drivetrain.DriveTrain(pwm_i2c=0x41)
+    drive = drivetrain.DriveTrain(pwm_i2c=0x4 if i2c is None else i2c)
     wiimote = None
     try:
         wiimote = Wiimote()
@@ -39,7 +40,11 @@ def run():
         time.sleep(0.05)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Radio Control TTOS.')
+    parser.add_argument('--i2c')
+    args = parser.parse_args()
     try:
+        i2c = args.i2c if args.i2c else None
         run()
     except Exception as e:
         logging.error("Stopping...")
