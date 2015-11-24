@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 import sys
-import cwiid
 import logging
 import time
-import drivetrain
-from wiimote import Wiimote, WiimoteException
+
 
 class rc:
     def __init__(self, drive, wiimote):
@@ -21,13 +19,6 @@ class rc:
         # Set up logging
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
         # Initiate the drivetrain
-        #drive = drivetrain.DriveTrain(pwm_i2c=0x41)
-        #wiimote = None
-        #try:
-        #    wiimote = Wiimote()
-
-        #except WiimoteException:
-        #    logging.error("Could not connect to wiimote. please try again")
         while self.wiimote and not self.killed:
             buttons_state = self.wiimote.get_buttons()
             joystick_state = self.wiimote.get_joystick_state()
@@ -42,10 +33,3 @@ class rc:
             self.drive.mix_channels_and_assign(throttle, steering)
 
             time.sleep(0.05)
-
-#if __name__ == "__main__":
-#    try:
-#        run()
-#    except Exception as e:
-#        logging.error("Stopping...")
-#        logging.exception(e)
