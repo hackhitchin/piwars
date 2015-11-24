@@ -93,3 +93,11 @@ class Wiimote():
         buttons_state = self.wm.state['buttons']
 
         return buttons_state
+
+    def get_nunchuk_buttons(self):
+        """Get just the current button state of the wiimote nunchuk"""
+        if not 'nunchuk' in self.get_state():
+            return None
+        buttons_state = self.wm.state['nunchuk']['buttons']
+
+        return buttons_state

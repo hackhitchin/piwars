@@ -25,22 +25,35 @@ class DriveTrain():
 
         self.pwm = PWM(pwm_i2c, debug=debug)
         self.pwm.setPWMFreq(pwm_freq)
+        # Flag set to True when motors are allowed to move
+        self.drive_enabled = True
 
     def set_servo_pulse(self, channel, pulse):
         """Send a raw servo pulse length to a specific speed controller
         channel"""
-        # 1,000,000 us per second
-        pulseLength = 1000000
-        #  60 Hz
-        pulseLength /= 50
-        logging.debug("%d us per period" % pulseLength)
-        # 12 bits of resolution
-        pulseLength /= 4096
-        logging.debug("%d us per bit" % pulseLength)
-        # pulse *= 1000
-        pulse /= pulseLength
-        logging.debug("pulse {0}".format(pulse))
-        self.pwm.setPWM(channel, 0, pulse)
+        # Only send servo pulses if drive is enabled
+        if self.drive_enabled:
+            # 1,000,000 us per second
+            pulseLength = 1000000
+            #  60 Hz
+            pulseLength /= 50
+            logging.debug("%d us per period" % pulseLength)
+            # 12 bits of resolution
+            pulseLength /= 4096
+            logging.debug("%d us per bit" % pulseLength)
+            # pulse *= 1000
+            pulse /= pulseLength
+            logging.debug("pulse {0}".format(pulse))
+            self.pwm.setPWM(channel, 0, pulse)
+
+    def enable_drive(self):
+        """Allow motors to be used"""
+        self.drive_enabled = True
+
+    def disable_drive(self):
+        """Disable motors so they cant be used"""
+        self.set_neutral()
+        self.drive_enabled = False
 
     def set_neutral(self):
         """Send the neutral servo position to both motor controllers"""
