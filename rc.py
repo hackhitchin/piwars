@@ -20,8 +20,8 @@ class rc:
             buttons_state = self.wiimote.get_buttons()
             joystick_state = self.wiimote.get_joystick_state()
 
-            logging.info("joystick_state: {0}".format(joystick_state))
-            logging.info("button state {0}".format(buttons_state))
+            logging.debug("joystick_state: {0}".format(joystick_state))
+            logging.debug("button state {0}".format(buttons_state))
 
             # Get the normalised joystick postion as a tuple of
             # (throttle, steering), where values are in the range -1 to 1
