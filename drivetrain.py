@@ -33,7 +33,6 @@ class DriveTrain():
         """Send a raw servo pulse length to a specific speed controller
         channel"""
         # Only send servo pulses if drive is enabled
-        pulse = int(pulse)
         if self.drive_enabled:
             # 1,000,000 us per second
             pulseLength = 1000000
@@ -46,7 +45,7 @@ class DriveTrain():
             # pulse *= 1000
             pulse /= pulseLength
             logging.debug("pulse {0}".format(pulse))
-            self.pwm.setPWM(channel, 0, pulse)
+            self.pwm.setPWM(channel, 0, int(pulse))
 
     def enable_drive(self):
         """Allow motors to be used"""
