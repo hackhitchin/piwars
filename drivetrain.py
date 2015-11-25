@@ -15,9 +15,9 @@ class DriveTrain():
         right_channel=1,
         debug=False
     ):
-        self.servo_min = 1000
-        self.servo_mid = 1500
-        self.servo_max = 2000
+        self.servo_min = 1050
+        self.servo_mid = 1550
+        self.servo_max = 2050
 
         self.channels = {
             'left': left_channel,
