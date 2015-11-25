@@ -1,3 +1,4 @@
+from __future__ import division
 import logging
 from libs.Adafruit_PWM_Servo_Driver import PWM
 from numpy import interp, clip
