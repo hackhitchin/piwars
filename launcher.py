@@ -49,13 +49,9 @@ class launcher:
             self.challenge = None
         elif self.menu[self.menu_state]=="Quit Challenge":
             # Gracefully kill any challenge thread
-            if self.challenge:
-                self.challenge.stop()
-                self.challenge = None
-                self.challenge_thread = None
-                logging.info("Stopping Challenge Thread")
-                # Reset menu item back to top of list
-                self.menu_state = 0
+            self.stop_threads()
+            # Reset menu item back to top of list
+            self.menu_state = 0
             else:
                 logging.info("No Challenge Challenge Thread")
         elif self.menu[self.menu_state]=="Power Off Pi":
@@ -80,6 +76,16 @@ class launcher:
             #turn on led to show connected
             drive.enable_drive()
             wiimote.led = 1
+
+    def stop_threads(self):
+        """Method neatly closes any open threads started by this class"""
+        if self.challenge:
+            self.challenge.stop()
+            self.challenge = None
+            self.challenge_thread = None
+            logging.info("Stopping Challenge Thread")
+        else:
+            logging.info("No Challenge Challenge Thread")
 
     def run(self):
         # Set up logging
@@ -150,5 +156,7 @@ if __name__ == "__main__":
         launcher = launcher()
         launcher.run()
     except Exception as e:
+        # Stop any active threads before leaving
+        launcher.stop_threads()
         logging.error("Stopping...")
         logging.exception(e)
