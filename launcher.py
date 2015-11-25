@@ -10,6 +10,8 @@ from wiimote import Wiimote, WiimoteException
 import threading
 import rc
 
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
 
 class launcher:
     def __init__(self):
@@ -67,13 +69,13 @@ class launcher:
         if drive:
             drive.set_neutral()
             drive.disable_drive()
-        if wiimote != None:
+        if wiimote is not None:
             # turn on leds on wii remote
             wiimote.led = 2
 
     def set_drive(self, drive, wiimote):
         """Simple method to highlight that motors are enabled"""
-        if wiimote != None:
+        if wiimote is not None:
             # turn on leds on wii remote
             #turn on led to show connected
             drive.enable_drive()
@@ -81,7 +83,6 @@ class launcher:
 
     def run(self):
         # Set up logging
-        logging.basicConfig(stream=sys.stdout, level=logging.INFO)
         # Initiate the drivetrain
         self.drive = drivetrain.DriveTrain(pwm_i2c=0x40)
         self.wiimote = None

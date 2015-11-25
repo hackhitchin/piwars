@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 import logging
 import time
 
@@ -16,8 +15,6 @@ class rc:
 
     def run(self):
         """Start listening to the wiimote and drive the motors"""
-        # Set up logging
-        logging.basicConfig(stream=sys.stdout, level=logging.INFO)
         # Initiate the drivetrain
         while self.wiimote and not self.killed:
             buttons_state = self.wiimote.get_buttons()

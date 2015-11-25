@@ -38,13 +38,13 @@ class DriveTrain():
             pulseLength = 1000000
             #  60 Hz
             pulseLength /= 50
-            logging.debug("%d us per period" % pulseLength)
+            # logging.debug("%d us per period" % pulseLength)
             # 12 bits of resolution
             pulseLength /= 4096
-            logging.debug("%d us per bit" % pulseLength)
+            # logging.debug("%d us per bit" % pulseLength)
             # pulse *= 1000
             pulse /= pulseLength
-            logging.debug("pulse {0}".format(pulse))
+            logging.debug("pulse {0}".format(int(pulse)))
             self.pwm.setPWM(channel, 0, int(pulse))
 
     def enable_drive(self):
