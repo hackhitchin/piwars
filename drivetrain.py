@@ -33,6 +33,7 @@ class DriveTrain():
         """Send a raw servo pulse length to a specific speed controller
         channel"""
         # Only send servo pulses if drive is enabled
+        pulse = int(pulse)
         if self.drive_enabled:
             # 1,000,000 us per second
             pulseLength = 1000000
