@@ -15,9 +15,9 @@ class DriveTrain():
         right_channel=1,
         debug=False
     ):
-        self.servo_min = 960
-        self.servo_mid = 1270
-        self.servo_max = 1870
+        self.servo_min = 1050
+        self.servo_mid = 1550
+        self.servo_max = 2050
 
         self.channels = {
             'left': left_channel,
@@ -33,20 +33,19 @@ class DriveTrain():
         """Send a raw servo pulse length to a specific speed controller
         channel"""
         # Only send servo pulses if drive is enabled
-        pulse = int(pulse)
         if self.drive_enabled:
             # 1,000,000 us per second
             pulseLength = 1000000
             #  60 Hz
             pulseLength /= 50
-            logging.debug("%d us per period" % pulseLength)
+            # logging.debug("%d us per period" % pulseLength)
             # 12 bits of resolution
             pulseLength /= 4096
-            logging.debug("%d us per bit" % pulseLength)
+            # logging.debug("%d us per bit" % pulseLength)
             # pulse *= 1000
             pulse /= pulseLength
-            logging.debug("pulse {0}".format(pulse))
-            self.pwm.setPWM(channel, 0, pulse)
+            logging.debug("pulse {0} - channel {1}".format(int(pulse), channel))
+            self.pwm.setPWM(channel, 0, int(pulse))
 
     def enable_drive(self):
         """Allow motors to be used"""
@@ -67,6 +66,8 @@ class DriveTrain():
         """Take values for the throttle and steering channels in the range
         -1 to 1, convert into servo pulses, and then mix the channels and
         assign to the left/right motor controllers"""
+        if not self.drive_enabled:
+            return
         pulse_throttle = self._map_channel_value(throttle)
         pulse_steering = self._map_channel_value(steering)
         output_pulse_left = clip(

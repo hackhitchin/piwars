@@ -32,14 +32,14 @@ class Wiimote():
                 self.wm = cwiid.Wiimote()
             except RuntimeError:
                 if attempts == max_tries:
-                    logging.info("cannot create connection")
+                    logging.error("cannot create connection")
                     raise WiimoteException(
                         "Could not create connection within {0} tries".format(
                             max_tries
                         )
                     )
-                logging.info("Error opening wiimote connection")
-                logging.info("attempt {0}".format(attempts))
+                logging.error("Error opening wiimote connection")
+                logging.error("attempt {0}".format(attempts))
                 attempts += 1
 
         # set wiimote to report button presses and accelerometer state
@@ -65,7 +65,7 @@ class Wiimote():
             }
         """
         if not 'nunchuk' in self.get_state():
-            logging.info("state: {0}".format(self.get_state()))
+            logging.debug("state: {0}".format(self.get_state()))
             return None
         else:
             joystick_state_raw = self.wm.state['nunchuk']['stick']
