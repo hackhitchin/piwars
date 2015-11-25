@@ -10,6 +10,7 @@ from wiimote import Wiimote, WiimoteException
 import threading
 import rc
 
+
 class launcher:
     def __init__(self):
         # Need a state set for this launcher.
@@ -56,7 +57,7 @@ class launcher:
             else:
                 logging.info("No Challenge Challenge Thread")
         elif self.menu[self.menu_state]=="Power Off Pi":
-            # Power off the raspberry pi safely 
+            # Power off the raspberry pi safely
             # by sending shutdown command to terminal
             logging.info("Shutting Down Pi")
             os.system("sudo shutdown -h now")
@@ -82,7 +83,7 @@ class launcher:
         # Set up logging
         logging.basicConfig(stream=sys.stdout, level=logging.INFO)
         # Initiate the drivetrain
-        self.drive = drivetrain.DriveTrain(pwm_i2c=0x41)
+        self.drive = drivetrain.DriveTrain(pwm_i2c=0x40)
         self.wiimote = None
         try:
             self.wiimote = Wiimote()
@@ -103,42 +104,43 @@ class launcher:
 
             # Test if B button is pressed
             if joystick_state is None or (buttons_state & cwiid.BTN_B) or (nunchuk_buttons_state & cwiid.NUNCHUK_BTN_Z):
-                # No nunchuk joystick detected or B or Z button 
+                # No nunchuk joystick detected or B or Z button
                 # pressed, must go into neutral for safety
                 logging.info("Neutral")
                 self.set_neutral(self.drive, self.wiimote)
             else:
                 # Enable motors
                 self.set_drive(self.drive, self.wiimote)
-                if ((buttons_state & cwiid.BTN_A)
-                    or (buttons_state & cwiid.BTN_UP) 
-                    or (buttons_state & cwiid.BTN_DOWN)):
-                    # Looking for state change only
-                    if not self.menu_button_pressed and (buttons_state & cwiid.BTN_A):
-                        # User wants to select a menu item
-                        self.menu_item_selected()
-                    elif not self.menu_button_pressed and (buttons_state & cwiid.BTN_UP):
-                        # Decrement menu index
-                        logging.info("Menu Down Pressed")
-                        self.menu_state = self.menu_state - 1
-                        if self.menu_state < 0:
-                            # Loop back to end of list
-                            self.menu_state = len(self.menu)-1
+
+            if ((buttons_state & cwiid.BTN_A)
+                or (buttons_state & cwiid.BTN_UP)
+                or (buttons_state & cwiid.BTN_DOWN)):
+                # Looking for state change only
+                if not self.menu_button_pressed and (buttons_state & cwiid.BTN_A):
+                    # User wants to select a menu item
+                    self.menu_item_selected()
+                elif not self.menu_button_pressed and (buttons_state & cwiid.BTN_UP):
+                    # Decrement menu index
+                    logging.info("Menu Down Pressed")
+                    self.menu_state = self.menu_state - 1
+                    if self.menu_state < 0:
+                        # Loop back to end of list
+                        self.menu_state = len(self.menu)-1
 #                        logging.info(self.menu[self.menu_state])
-                    elif not self.menu_button_pressed and (buttons_state & cwiid.BTN_DOWN):
-                        # Increment menu index
-                        logging.info("Menu Up Pressed")
-                        self.menu_state = self.menu_state + 1
-                        if self.menu_state >= len(self.menu):
-                            # Loop back to start of list
-                            self.menu_state = 0
+                elif not self.menu_button_pressed and (buttons_state & cwiid.BTN_DOWN):
+                    # Increment menu index
+                    logging.info("Menu Up Pressed")
+                    self.menu_state = self.menu_state + 1
+                    if self.menu_state >= len(self.menu):
+                        # Loop back to start of list
+                        self.menu_state = 0
 #                        logging.info(self.menu[self.menu_state])
 
-                    # Only change button state AFTER we have used it
-                    self.menu_button_pressed = True
-                else:
-                    # No menu buttons pressed
-                    self.menu_button_pressed = False
+                # Only change button state AFTER we have used it
+                self.menu_button_pressed = True
+            else:
+                # No menu buttons pressed
+                self.menu_button_pressed = False
 
             time.sleep(0.05)
 
