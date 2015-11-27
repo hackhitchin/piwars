@@ -42,14 +42,20 @@ class launcher:
             # Create and start a new thread running the remote control script
             self.challenge_thread = threading.Thread(target=self.challenge.run)
             self.challenge_thread.start()
+            # Move menu index to quit challenge by default
+            self.menu_state = len(self.menu)-1
         elif self.menu[self.menu_state]=="Three Point Turn":
             # Start the three point turn challenge
             logging.info("Starting Three Point Turn Challenge")
             self.challenge = None
+            # Move menu index to quit challenge by default
+            self.menu_state = len(self.menu)-1
         elif self.menu[self.menu_state]=="Straight Line Speed":
             # Start the straight line speed challenge
             logging.info("Starting Straight Line Speed Challenge")
             self.challenge = None
+            # Move menu index to quit challenge by default
+            self.menu_state = len(self.menu)-1
         elif self.menu[self.menu_state]=="Quit Challenge":
             # Reset menu item back to top of list
             self.menu_state = 0
