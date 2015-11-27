@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import logging
 import time
+import cwiid
 
 
 class rc:
