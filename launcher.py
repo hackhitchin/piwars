@@ -52,8 +52,7 @@ class launcher:
             self.stop_threads()
             # Reset menu item back to top of list
             self.menu_state = 0
-            else:
-                logging.info("No Challenge Challenge Thread")
+            logging.info("No Challenge Challenge Thread")
         elif self.menu[self.menu_state]=="Power Off Pi":
             # Power off the raspberry pi safely
             # by sending shutdown command to terminal
@@ -155,7 +154,7 @@ if __name__ == "__main__":
     try:
         launcher = launcher()
         launcher.run()
-    except Exception as e:
+    except (Exception, KeyboardInterrupt) as e:
         # Stop any active threads before leaving
         launcher.stop_threads()
         logging.error("Stopping...")
