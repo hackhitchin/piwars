@@ -15,9 +15,17 @@ class DriveTrain():
         right_channel=1,
         debug=False
     ):
+        # Main set of motor controller ranges
         self.servo_min = 1050
         self.servo_mid = 1550
         self.servo_max = 2050
+
+        # Full speed range
+        self.servo_full_min = 1050
+        self.servo_full_max = 2050
+        # Low speed range is 1/4 of full speed
+        self.servo_low_min = int(self.servo_mid - (self.servo_mid-self.servo_full_min)/4)
+        self.servo_low_max = int(self.servo_mid + (self.servo_full_max-self.servo_mid)/4)
 
         self.channels = {
             'left': left_channel,
@@ -60,6 +68,16 @@ class DriveTrain():
         """Send the neutral servo position to both motor controllers"""
         self.set_servo_pulse(self.channels['left'], self.servo_mid)
         self.set_servo_pulse(self.channels['right'], self.servo_mid)
+
+    def set_full_speed(self):
+        """Set servo range to FULL extents"""
+        self.servo_min = servo_full_min
+        self.servo_max = servo_full_max
+
+    def set_low_speed(self):
+        """Limit servo range extents"""
+        self.servo_min = servo_low_min
+        self.servo_max = servo_low_max
 
     # TODO - flesh out setters for raw pulse values (both channels)
     def mix_channels_and_assign(self, throttle, steering):

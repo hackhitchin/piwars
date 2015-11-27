@@ -23,6 +23,12 @@ class rc:
             logging.debug("joystick_state: {0}".format(joystick_state))
             logging.debug("button state {0}".format(buttons_state))
 
+            # If 'C' is pressed, go to full speed
+            if (nunchuk_buttons_state & cwiid.NUNCHUK_BTN_C):
+                self.drive.set_full_speed()
+            else:
+                self.drive.set_low_speed()
+
             # Get the normalised joystick postion as a tuple of
             # (throttle, steering), where values are in the range -1 to 1
             joystick_pos = joystick_state['state']['normalised']
@@ -30,3 +36,7 @@ class rc:
             self.drive.mix_channels_and_assign(throttle, steering)
 
             time.sleep(0.05)
+        # Final thing we do leaving RC mode is to 
+        # set back into neutral for safety
+        if self.drive:
+            self.drive.set_neutral()

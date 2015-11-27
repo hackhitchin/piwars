@@ -32,6 +32,9 @@ class launcher:
 
     def menu_item_selected(self):
         """Select the current menu item"""
+        # If ANYTHING selected, we gracefully 
+        # kill any challenge threads open
+        self.stop_threads()
         if self.menu[self.menu_state]=="Remote Control":
             # Start the remote control
             logging.info("Entering into Remote Control Mode")
@@ -48,8 +51,6 @@ class launcher:
             logging.info("Starting Straight Line Speed Challenge")
             self.challenge = None
         elif self.menu[self.menu_state]=="Quit Challenge":
-            # Gracefully kill any challenge thread
-            self.stop_threads()
             # Reset menu item back to top of list
             self.menu_state = 0
             logging.info("No Challenge Challenge Thread")
@@ -85,6 +86,8 @@ class launcher:
             logging.info("Stopping Challenge Thread")
         else:
             logging.info("No Challenge Challenge Thread")
+        # Safety setting
+        self.set_neutral(self.drive, self.wiimote):
 
     def run(self):
         # Set up logging
