@@ -18,6 +18,7 @@ class rc:
         # Initiate the drivetrain
         while self.wiimote and not self.killed:
             buttons_state = self.wiimote.get_buttons()
+            nunchuk_buttons_state = self.wiimote.get_nunchuk_buttons()
             joystick_state = self.wiimote.get_joystick_state()
 
             logging.debug("joystick_state: {0}".format(joystick_state))
