@@ -71,13 +71,13 @@ class DriveTrain():
 
     def set_full_speed(self):
         """Set servo range to FULL extents"""
-        self.servo_min = servo_full_min
-        self.servo_max = servo_full_max
+        self.servo_min = self.servo_full_min
+        self.servo_max = self.servo_full_max
 
     def set_low_speed(self):
         """Limit servo range extents"""
-        self.servo_min = servo_low_min
-        self.servo_max = servo_low_max
+        self.servo_min = self.servo_low_min
+        self.servo_max = self.servo_low_max
 
     # TODO - flesh out setters for raw pulse values (both channels)
     def mix_channels_and_assign(self, throttle, steering):
