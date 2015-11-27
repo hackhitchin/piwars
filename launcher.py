@@ -87,7 +87,7 @@ class launcher:
         else:
             logging.info("No Challenge Challenge Thread")
         # Safety setting
-        self.set_neutral(self.drive, self.wiimote):
+        self.set_neutral(self.drive, self.wiimote)
 
     def run(self):
         # Set up logging
