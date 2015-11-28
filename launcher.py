@@ -6,7 +6,7 @@ import logging
 import time
 import drivetrain
 from wiimote import Wiimote, WiimoteException
-
+from Adafruit_CharLCD import Adafruit_CharLCD
 import threading
 import rc
 
@@ -31,6 +31,13 @@ class launcher:
         self.wiimote = None
         # Current Challenge
         self.challenge = None
+
+        # LCD Display
+        self.lcd = Adafruit_CharLCD()
+        self.lcd.begin(16, 1)
+        self.lcd.clear()
+        self.lcd.message(datetime.now().strftime('%b %d  %H:%M:%S\n'))
+        self.lcd.message('IP %s' % (ipaddr))
 
     def menu_item_selected(self):
         """Select the current menu item"""

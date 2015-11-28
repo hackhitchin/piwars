@@ -17,15 +17,16 @@ class DriveTrain():
     ):
         # Main set of motor controller ranges
         self.servo_min = 1050
-        self.servo_mid = 1550
+        self.servo_mid = 1555
         self.servo_max = 2050
 
         # Full speed range
         self.servo_full_min = 1050
         self.servo_full_max = 2050
         # Low speed range is 1/4 of full speed
-        self.servo_low_min = int(self.servo_mid - (self.servo_mid-self.servo_full_min)/4)
-        self.servo_low_max = int(self.servo_mid + (self.servo_full_max-self.servo_mid)/4)
+        speed_divisor = 2
+        self.servo_low_min = int(self.servo_mid - (self.servo_mid-self.servo_full_min)/speed_divisor)
+        self.servo_low_max = int(self.servo_mid + (self.servo_full_max-self.servo_mid)/speed_divisor)
 
         self.channels = {
             'left': left_channel,
