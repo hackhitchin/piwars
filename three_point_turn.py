@@ -88,7 +88,7 @@ class three_point_turn:
                 break
 
             if now < acceleration_timeout:
-                throttle, last_throttle_update = self.ease_value(throttle, peak_throttle, self.max_rate)
+                throttle, last_throttle_update = self.ease_value(throttle, peak_throttle, self.max_rate, last_throttle_update)
                 steering = peak_steering
             else:
                 # easing needs adding
@@ -106,8 +106,10 @@ class three_point_turn:
             steering = end_steering
             self.drive.mix_channels_and_assign(throttle, steering)
 
-    def ease_value(self, current_value, target, rate, last_update_time):
+    def ease_value(self, current_value, target, rate, last_update_time=None):
         now = datetime.now()
+        if last_update_time is None:
+            last_update_time = now
         # if variable is above target
         if current_value > target:
             new_value = max(target, current_value - rate * (now - last_update_time))
