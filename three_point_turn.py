@@ -4,12 +4,13 @@
 
 from ABE_ADCPi import ADCPi
 from ABE_helpers import ABEHelpers
-import time
+from datetime import datetime, timedelta
 import os
 import logging
 import sys
 import drivetrain
 from numpy import clip, interp
+
 
 class three_point_turn:
     def __init__(self, drive):
@@ -20,7 +21,8 @@ class three_point_turn:
         self.adc = ADCPi(bus, 0x68, 0x69, 12)
 
         #define fixed values
-        self.red_min = 3  #red is typically 3.5V
+        # red is typically 3.5V
+        self.red_min = 3
         self.red = 3.5
         self.full_forward = 0.5
         self.slow_forward = 0.1
@@ -30,7 +32,8 @@ class three_point_turn:
         self.straight = 0
         self.full_left = -1
         self.rear_line_sensor = 2
-        self.front_line_sensor = 2  #same sensor for now
+        # same sensor for now
+        self.front_line_sensor = 2
         self.max_rate = 2
 
         # Drivetrain is passed in
@@ -59,47 +62,67 @@ class three_point_turn:
         # Final set motors to neutral to stop
         self.drive.set_neutral()
 
-    def move_segment(self, total_timeout, accelerating_time, line_sensor, peak_throttle, peak_steering, end_throttle, end_steering):
+    def move_segment(
+        self,
+        total_timeout=0,
+        accelerating_time=0,
+        line_sensor=None,
+        peak_throttle=0,
+        peak_steering=0,
+        end_throttle=0,
+        end_steering=0
+    ):
         #Note Line_sensor=0 if no line sensor exit required
         # calculate timeout times
-        end_timeout = time.time() + total_timeout
-        acceleration_timeout = time.time() + accelerating_time
+        now = datetime.now()
+        end_timeout = now + timedelta(seconds=total_timeout)
+        acceleration_timeout = now + timedelta(seconds=accelerating_time)
 
-        while time.time() < end_timeout and line_sensor_value > red_min:
-            if time.time() < acceleration_timeout:
-                throttle = self.ease_throttle(throttle, peak_throttle, max_rate)
+        while now < end_timeout:
+            # If we have a line sensor, check it here. Bail if necesary
+            if line_sensor and (self.adc.read_voltage(line_sensor) > self.red_min):
+                break
+
+            if now < acceleration_timeout:
+                #
+                # What is the throttle variable in the ease_throttle call supposed to be here?
+                #
+                throttle = self.ease_throttle(throttle, peak_throttle, self.max_rate)
                 steering = peak_steering
             else:
-                #easing needs adding 
+                # easing needs adding
                 throttle = end_throttle
                 steering = end_steering
-            if line_Sensor != 0:   #if line sensor needs checking
-                line_sensor_value = adc.read_voltage(line_sensor)
-            else:
-                LineSensorValue = Red
+
             self.drive.mix_channels_and_assign(throttle, steering)
 
-        if throttle != end_throttle or steering != end_steering: #must have got better than usual acceleration. need to slow down before finishing
-            throttle = end_throttle  #needs easing adding
-            steering = end_steering #needs easing adding
+        # must have got better than usual acceleration.
+        # need to slow down before finishing
+        if throttle != end_throttle or steering != end_steering:
+            # needs easing adding
+            throttle = end_throttle
+            # needs easing adding
+            steering = end_steering
             self.drive.mix_channels_and_assign(throttle, steering)
 
     def ease_throttle(self, current_throttle, target, rate):
+        now = datetime.now()
         # if variable is above target
         if current_throttle > target:
-            new_throttle = max(target, current_throttle - rate * (time.time() - last_throttle_update))
+            new_throttle = max(target, current_throttle - rate * (now - last_throttle_update))
         # or variable is below target
         if current_throttle >= target:
-            new_throttle = max(target, current_throttle + rate * (time.time() - last_throttle_update))
-        last_throttle_update = time.time() 
+            new_throttle = max(target, current_throttle + rate * (now - last_throttle_update))
+        last_throttle_update = datetime.now()
         return new_throttle
 
     def ease_steering(self, current_steering, target, rate):
+        now = datetime.now()
         # if variable is above target
         if current_steering > target:
-            new_steering = max(target, current_steering - rate * (time.time() - last_steering_update))
+            new_steering = max(target, current_steering - rate * (now - last_steering_update))
         # or variable is below target
         if current_steering >= target:
-            new_steering = max(target, current_steering + rate * (time.time() - last_steering_update))
-        last_steering_update = time.time() 
+            new_steering = max(target, current_steering + rate * (now - last_steering_update))
+        last_steering_update = datetime.now()
         return new_steering
