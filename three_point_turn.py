@@ -78,16 +78,17 @@ class three_point_turn:
         end_timeout = now + timedelta(seconds=total_timeout)
         acceleration_timeout = now + timedelta(seconds=accelerating_time)
 
+        # initialise throttle to 0
+        throttle = 0
+        last_throttle_update = None
+
         while now < end_timeout:
             # If we have a line sensor, check it here. Bail if necesary
             if line_sensor and (self.adc.read_voltage(line_sensor) > self.red_min):
                 break
 
             if now < acceleration_timeout:
-                #
-                # What is the throttle variable in the ease_throttle call supposed to be here?
-                #
-                throttle = self.ease_throttle(throttle, peak_throttle, self.max_rate)
+                throttle, last_throttle_update = self.ease_value(throttle, peak_throttle, self.max_rate)
                 steering = peak_steering
             else:
                 # easing needs adding
@@ -105,24 +106,13 @@ class three_point_turn:
             steering = end_steering
             self.drive.mix_channels_and_assign(throttle, steering)
 
-    def ease_throttle(self, current_throttle, target, rate):
+    def ease_value(self, current_value, target, rate, last_update_time):
         now = datetime.now()
         # if variable is above target
-        if current_throttle > target:
-            new_throttle = max(target, current_throttle - rate * (now - last_throttle_update))
+        if current_value > target:
+            new_value = max(target, current_value - rate * (now - last_update_time))
         # or variable is below target
-        if current_throttle >= target:
-            new_throttle = max(target, current_throttle + rate * (now - last_throttle_update))
-        last_throttle_update = datetime.now()
-        return new_throttle
-
-    def ease_steering(self, current_steering, target, rate):
-        now = datetime.now()
-        # if variable is above target
-        if current_steering > target:
-            new_steering = max(target, current_steering - rate * (now - last_steering_update))
-        # or variable is below target
-        if current_steering >= target:
-            new_steering = max(target, current_steering + rate * (now - last_steering_update))
-        last_steering_update = datetime.now()
-        return new_steering
+        if current_value >= target:
+            new_value = max(target, current_value + rate * (now - last_update_time))
+        last_update_time = datetime.now()
+        return new_value, last_update_time
