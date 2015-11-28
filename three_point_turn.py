@@ -44,17 +44,17 @@ class three_point_turn:
         # initiate camera
 
          #forward to turning point
-        self.movesegment(T_first_segment_timeout, T_accelerating_first_segment, rear_line_sensor, full_forward, straight, slow_forward, straight)
+        self.move_segment(T_first_segment_timeout, T_accelerating_first_segment, rear_line_sensor, full_forward, straight, slow_forward, straight)
         #first Left turn
-        self.movesegment(T_left_turn_time, T_accelerating_second_segment, 0, Stopped, full_left, straight, slow_forward)
+        self.move_segment(T_left_turn_time, T_accelerating_second_segment, 0, Stopped, full_left, straight, slow_forward)
         #forward to first side line
-        self.movesegment(T_third_segment_timeout, T_accelerating_third_segment, front_line_sensor, full_forward, straight, slow_forward,straight)
+        self.move_segment(T_third_segment_timeout, T_accelerating_third_segment, front_line_sensor, full_forward, straight, slow_forward,straight)
         #reverse portion to second side line
-        self.movesegment(T_forth_segment_timeout, T_accelerating_forth_segment, rear_line_sensor, full_reverse, straight, slow_reverse, straight)
+        self.move_segment(T_forth_segment_timeout, T_accelerating_forth_segment, rear_line_sensor, full_reverse, straight, slow_reverse, straight)
         #reverse portion to second side line
-        self.movesegment(T_fifth_segment_timeout, T_accelerating_fifth_segment, 0, full_forward, straight, slow_forward, straight)
+        self.move_segment(T_fifth_segment_timeout, T_accelerating_fifth_segment, 0, full_forward, straight, slow_forward, straight)
         #second Left turn
-        self.movesegment(T_left_turn_time, T_accelerating_second_segment, 0, Stopped, full_left, straight, slow_forward)
+        self.move_segment(T_left_turn_time, T_accelerating_second_segment, 0, Stopped, full_left, straight, slow_forward)
         #return to start
         self.movesegment(T_last_segment_timeout, T_accelerating_last_segment, front_line_sensor, full_forward, straight, slow_forward, straight)
         #Enter start box
