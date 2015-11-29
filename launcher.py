@@ -51,6 +51,8 @@ class launcher:
             # Start the three point turn challenge
             logging.info("Starting Three Point Turn Challenge")
             self.challenge = ThreePointTurn(self.drive)
+            # Create and start a new thread running the remote control script
+            self.challenge_thread = threading.Thread(target=self.challenge.run)
             self.challenge_thread.start()
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
