@@ -20,15 +20,15 @@ class ThreePointTurn:
         self.red_min = 3
         self.red = 3.5
         self.full_forward = 0.5
-        self.self.slow_forward = 0.1
+        self.slow_forward = 0.1
         self.full_reverse = -0.5
         self.slow_reverse = -0.1
 
-        self.self.straight = 0
+        self.straight = 0
         self.full_left = -1
         self.rear_line_sensor = 2
         # same sensor for now
-        self.self.front_line_sensor = 2
+        self.front_line_sensor = 2
         self.max_rate = 2
 
         # Drivetrain is passed in
