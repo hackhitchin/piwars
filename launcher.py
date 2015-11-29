@@ -121,9 +121,7 @@ class launcher:
         """ Main Running loop controling bot mode and menu state """        
         # Tell user how to connect wiimote
         self.lcd.clear()
-        if self.shutting_down:
-            # How current menu item on LCD
-            self.lcd.message( 'Press 1+2 On Wiimote' + '\n' )
+        self.lcd.message( 'Press 1+2 On Wiimote' + '\n' )
 
         # Initiate the drivetrain
         self.drive = drivetrain.DriveTrain(pwm_i2c=0x40)
