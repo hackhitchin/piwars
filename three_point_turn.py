@@ -10,6 +10,7 @@ import logging
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
+
 class ThreePointTurn:
     def __init__(self, drive):
         """ Standard Constructor """
