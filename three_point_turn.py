@@ -143,7 +143,7 @@ class ThreePointTurn:
         end_throttle=0,
         end_steering=0
     ):
-    logging.info("move_segment called with arguments: {0}".format(locals()))
+        logging.info("move_segment called with arguments: {0}".format(locals()))
         # Note Line_sensor=0 if no line sensor exit required
         # calculate timeout times
         now = datetime.now()
