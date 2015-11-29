@@ -12,7 +12,7 @@ import drivetrain
 from numpy import clip, interp
 
 
-class three_point_turn:
+class ThreePointTurn:
     def __init__(self, drive):
         """ Standard Constructor """
         # set up ADC
