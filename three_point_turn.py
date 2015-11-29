@@ -15,7 +15,7 @@ class ThreePointTurn:
         # set up ADC
         self.i2c_helper = ABEHelpers()
         self.bus = self.i2c_helper.get_smbus()
-        self.adc = ADCPi(self.bus, 0x68, 0x69, 12)
+        self.adc = ADCPi(self.bus, 0x6a, 0x6b, 12)
 
         # define fixed values
         # red is typically 3.5V
@@ -35,6 +35,8 @@ class ThreePointTurn:
 
         # Drivetrain is passed in
         self.drive = drive
+
+        self.killed = False
 
     def run(self):
         """ Main call to run the three point turn script """
@@ -131,6 +133,10 @@ class ThreePointTurn:
         )
         # Final set motors to neutral to stop
         self.drive.set_neutral()
+
+    def stop(self):
+        """Simple method to stop the challenge"""
+        self.killed = True
 
     def move_segment(
         self,
