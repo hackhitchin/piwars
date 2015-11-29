@@ -39,6 +39,8 @@ class launcher:
         self.lcd.clear()
         self.lcd.message('Initiating...')
         self.lcd_loop_skip = 5
+        # Shutting down status
+        self.shutting_down = False
 
     def menu_item_selected(self):
         """Select the current menu item"""
@@ -52,18 +54,27 @@ class launcher:
             # Create and start a new thread running the remote control script
             self.challenge_thread = threading.Thread(target=self.challenge.run)
             self.challenge_thread.start()
+            # Ensure we know what challenge is running
+            if self.challenge:
+                self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
         elif self.menu[self.menu_state]=="Three Point Turn":
             # Start the three point turn challenge
             logging.info("Starting Three Point Turn Challenge")
             self.challenge = None
+            # Ensure we know what challenge is running
+            if self.challenge:
+                self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
         elif self.menu[self.menu_state]=="Straight Line Speed":
             # Start the straight line speed challenge
             logging.info("Starting Straight Line Speed Challenge")
             self.challenge = None
+            # Ensure we know what challenge is running
+            if self.challenge:
+                self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
         elif self.menu[self.menu_state]=="Quit Challenge":
@@ -75,9 +86,7 @@ class launcher:
             # by sending shutdown command to terminal
             logging.info("Shutting Down Pi")
             os.system("sudo shutdown -h now")
-        # Ensure we know what challenge is running
-        if self.challenge:
-            self.challenge_name = self.menu[self.menu_state]
+            self.shutting_down = True
 
     def set_neutral(self, drive, wiimote):
         """Simple method to ensure motors are disabled"""
@@ -109,7 +118,13 @@ class launcher:
         self.set_neutral(self.drive, self.wiimote)
 
     def run(self):
-        # Set up logging
+        """ Main Running loop controling bot mode and menu state """        
+        # Tell user how to connect wiimote
+        self.lcd.clear()
+        if self.shutting_down:
+            # How current menu item on LCD
+            self.lcd.message( 'Press 1+2 On Wiimote' + '\n' )
+
         # Initiate the drivetrain
         self.drive = drivetrain.DriveTrain(pwm_i2c=0x40)
         self.wiimote = None
@@ -134,13 +149,18 @@ class launcher:
             if loop_count >= self.lcd_loop_skip:
                 # Reset loop count if over
                 loop_count = 0
-                # How current menu item on LCD
-                self.lcd.clear()
-                self.lcd.message( self.menu[self.menu_state] + '\n' )
 
-                # If challenge is running, show it on line 2
-                if self.challenge:
-                    self.lcd.message( '[' + self.challenge_name + ']' )
+                self.lcd.clear()
+                if self.shutting_down:
+                    # How current menu item on LCD
+                    self.lcd.message( 'Shutting Down Pi' + '\n' )
+                else:
+                    # How current menu item on LCD
+                    self.lcd.message( self.menu[self.menu_state] + '\n' )
+
+                    # If challenge is running, show it on line 2
+                    if self.challenge:
+                        self.lcd.message( '[' + self.challenge_name + ']' )
 
             # Increment Loop Count
             loop_count = loop_count + 1
