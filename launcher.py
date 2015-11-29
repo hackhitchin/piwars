@@ -51,6 +51,7 @@ class launcher:
             # Start the three point turn challenge
             logging.info("Starting Three Point Turn Challenge")
             self.challenge = ThreePointTurn(self.drive)
+            self.challenge_thread.start()
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
         elif self.menu[self.menu_state]=="Straight Line Speed":
