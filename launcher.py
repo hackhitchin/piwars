@@ -38,7 +38,7 @@ class launcher:
         self.lcd.begin(16, 1)
         self.lcd.clear()
         self.lcd.message('Initiating...')
-        self.lcd_loop_skip = 10
+        self.lcd_loop_skip = 5
 
     def menu_item_selected(self):
         """Select the current menu item"""
@@ -136,10 +136,12 @@ class launcher:
                 loop_count = 0
                 # How current menu item on LCD
                 self.lcd.clear()
-                self.lcd.message( self.menu[self.menu_state] )
+                self.lcd.message( self.menu[self.menu_state] + '\n' )
+
                 # If challenge is running, show it on line 2
                 if self.challenge:
                     self.lcd.message( '[' + self.challenge_name + ']' )
+
             # Increment Loop Count
             loop_count = loop_count + 1
 
