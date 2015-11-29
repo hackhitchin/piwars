@@ -56,9 +56,9 @@ class three_point_turn:
         #second Left turn
         self.move_segment(T_left_turn_time, T_accelerating_second_segment, 0, Stopped, full_left, straight, slow_forward)
         #return to start
-        self.movesegment(T_last_segment_timeout, T_accelerating_last_segment, front_line_sensor, full_forward, straight, slow_forward, straight)
+        self.move_segment(T_last_segment_timeout, T_accelerating_last_segment, front_line_sensor, full_forward, straight, slow_forward, straight)
         #Enter start box
-        self.movesegment(T_finish_timeout, T_accelerating_box_segment, rear_line_sensor, slow_forward, straight, Stopped, straight)
+        self.move_segment(T_finish_timeout, T_accelerating_box_segment, rear_line_sensor, slow_forward, straight, Stopped, straight)
         # Final set motors to neutral to stop
         self.drive.set_neutral()
 
