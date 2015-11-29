@@ -9,6 +9,7 @@ from wiimote import Wiimote, WiimoteException
 
 import threading
 import rc
+from three_point_turn import ThreePointTurn
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
@@ -34,7 +35,7 @@ class launcher:
 
     def menu_item_selected(self):
         """Select the current menu item"""
-        # If ANYTHING selected, we gracefully 
+        # If ANYTHING selected, we gracefully
         # kill any challenge threads open
         self.stop_threads()
         if self.menu[self.menu_state]=="Remote Control":
@@ -49,7 +50,7 @@ class launcher:
         elif self.menu[self.menu_state]=="Three Point Turn":
             # Start the three point turn challenge
             logging.info("Starting Three Point Turn Challenge")
-            self.challenge = None
+            self.challenge = ThreePointTurn(self.drive)
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
         elif self.menu[self.menu_state]=="Straight Line Speed":
