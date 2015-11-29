@@ -31,13 +31,14 @@ class launcher:
         self.wiimote = None
         # Current Challenge
         self.challenge = None
+        self.challenge_name = ""
 
         # LCD Display
         self.lcd = Adafruit_CharLCD()
         self.lcd.begin(16, 1)
         self.lcd.clear()
-        self.lcd.message(datetime.now().strftime('%b %d  %H:%M:%S\n'))
-        self.lcd.message('IP %s' % (ipaddr))
+        self.lcd.message('Initiating...')
+        self.lcd_loop_skip = 10
 
     def menu_item_selected(self):
         """Select the current menu item"""
@@ -74,6 +75,9 @@ class launcher:
             # by sending shutdown command to terminal
             logging.info("Shutting Down Pi")
             os.system("sudo shutdown -h now")
+        # Ensure we know what challenge is running
+        if self.Challenge:
+            self.challenge_name = self.menu[self.menu_state]
 
     def set_neutral(self, drive, wiimote):
         """Simple method to ensure motors are disabled"""
@@ -116,6 +120,7 @@ class launcher:
             logging.error("Could not connect to wiimote. please try again")
 
         # Constantly check wiimote for button presses
+        loop_count = 0
         while self.wiimote:
             buttons_state = self.wiimote.get_buttons()
             nunchuk_buttons_state = self.wiimote.get_nunchuk_buttons()
@@ -125,6 +130,18 @@ class launcher:
 #            logging.info("button state {0}".format(buttons_state))
             # Always show current menu item
             logging.info("Menu: " + self.menu[self.menu_state])
+
+            if loop_count >= self.lcd_loop_skip:
+                # Reset loop count if over
+                loop_count = 0
+                # How current menu item on LCD
+                self.lcd.clear()
+                self.lcd.message( self.menu[self.menu_state] )
+                # If challenge is running, show it on line 2
+                if self.challenge:
+                    self.lcd.message( '[' + self.challenge_name + ']' )
+            # Increment Loop Count
+            loop_count = loop_count + 1
 
             # Test if B button is pressed
             if joystick_state is None or (buttons_state & cwiid.BTN_B) or (nunchuk_buttons_state & cwiid.NUNCHUK_BTN_Z):
