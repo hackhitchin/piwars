@@ -76,7 +76,7 @@ class launcher:
             logging.info("Shutting Down Pi")
             os.system("sudo shutdown -h now")
         # Ensure we know what challenge is running
-        if self.Challenge:
+        if self.challenge:
             self.challenge_name = self.menu[self.menu_state]
 
     def set_neutral(self, drive, wiimote):
