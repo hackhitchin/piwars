@@ -5,11 +5,13 @@
 from ABE_ADCPi import ADCPi
 from ABE_helpers import ABEHelpers
 from datetime import datetime, timedelta
+import logging
 
 
 class ThreePointTurn:
     def __init__(self, drive):
         """ Standard Constructor """
+        logging.info("Three Point Turn constructor")
         # set up ADC
         self.i2c_helper = ABEHelpers()
         self.bus = self.i2c_helper.get_smbus()
@@ -141,6 +143,7 @@ class ThreePointTurn:
         end_throttle=0,
         end_steering=0
     ):
+    logging.info("move_segment called with arguments: {0}".format(locals()))
         # Note Line_sensor=0 if no line sensor exit required
         # calculate timeout times
         now = datetime.now()
