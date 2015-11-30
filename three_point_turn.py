@@ -161,7 +161,7 @@ class ThreePointTurn:
 
         last_throttle_update = None
 
-        while now < end_timeout:
+        while datetime.now() < end_timeout:
             # If we have a line sensor, check it here. Bail if necesary
             if line_sensor and (self.adc.read_voltage(line_sensor) > self.red_min):
                 break
