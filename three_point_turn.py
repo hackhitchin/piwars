@@ -201,7 +201,7 @@ class ThreePointTurn:
                 target, current_value - rate * (now - last_update_time)
             )
         # or variable is below target
-        if current_value >= target:
+        if current_value <= target:
             new_value = max(
                 target, current_value + rate * (now - last_update_time)
             )
