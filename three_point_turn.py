@@ -199,7 +199,7 @@ class ThreePointTurn:
         # if variable is above target
         if current_value > target:
             new_value = max(
-                target, current_value - rate * (now - last_update_time)
+                target, current_value - rate * int((now - last_update_time).total_seconds())
             )
         # or variable is below target
         if current_value <= target:
