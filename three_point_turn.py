@@ -167,7 +167,7 @@ class ThreePointTurn:
                 break
 
             if now < acceleration_timeout:
-                last_throttle_update = self.ease_value(
+                throttle, last_throttle_update = self.ease_value(
                     start_throttle,
                     max_throttle,
                     self.max_rate,
