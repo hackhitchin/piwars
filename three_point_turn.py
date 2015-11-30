@@ -196,14 +196,14 @@ class ThreePointTurn:
         if last_update_time is None:
             last_update_time = now
         # if variable is above target
-        if current_value > target:
+        if current_value > target:;p
             new_value = max(
                 target, current_value - rate * (now - last_update_time)
             )
         # or variable is below target
         if current_value <= target:
             new_value = max(
-                target, current_value + rate * (now - last_update_time)
+                target, current_value + rate * int((now - last_update_time).total_seconds())
             )
         last_update_time = datetime.now()
         return new_value, last_update_time
