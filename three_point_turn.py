@@ -24,6 +24,7 @@ class ThreePointTurn:
         # red is typically 3.5V
         self.red_min = 3
         self.red = 3.5
+        self.stopped = 0
         self.full_forward = 0.5
         self.slow_forward = 0.1
         self.full_reverse = -0.5
