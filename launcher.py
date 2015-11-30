@@ -40,7 +40,7 @@ class launcher:
 
         # LCD Display
         #self.lcd = Adafruit_CharLCD( pin_rs=25, pin_e=24, pins_db=[23, 17, 21, 22], self.GPIO )
-        self.lcd = Adafruit_CharLCD( pin_rs=25, pin_e=24, pins_db=[23, 17, 27, 22], self.GPIO )
+        self.lcd = Adafruit_CharLCD( pin_rs=25, pin_e=24, pins_db=[23, 17, 27, 22], GPIO=self.GPIO )
         self.lcd.begin(16, 1)
         self.lcd.clear()
         self.lcd.message('Initiating...')
