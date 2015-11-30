@@ -9,6 +9,8 @@ from wiimote import Wiimote, WiimoteException
 from Adafruit_CharLCD import Adafruit_CharLCD
 import threading
 import rc
+import RPi.GPIO as GPIO
+
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
@@ -33,8 +35,12 @@ class launcher:
         self.challenge = None
         self.challenge_name = ""
 
+        GPIO.setwarnings(False)
+        self.GPIO = GPIO
+
         # LCD Display
-        self.lcd = Adafruit_CharLCD()
+        #self.lcd = Adafruit_CharLCD( pin_rs=25, pin_e=24, pins_db=[23, 17, 21, 22], self.GPIO )
+        self.lcd = Adafruit_CharLCD( pin_rs=25, pin_e=24, pins_db=[23, 17, 27, 22], self.GPIO )
         self.lcd.begin(16, 1)
         self.lcd.clear()
         self.lcd.message('Initiating...')
@@ -121,7 +127,8 @@ class launcher:
         """ Main Running loop controling bot mode and menu state """        
         # Tell user how to connect wiimote
         self.lcd.clear()
-        self.lcd.message( 'Press 1+2 On Wiimote' + '\n' )
+        self.lcd.message( 'Press 1+2 \n' )
+        self.lcd.message( 'On Wiimote' )
 
         # Initiate the drivetrain
         self.drive = drivetrain.DriveTrain(pwm_i2c=0x40)
@@ -131,6 +138,12 @@ class launcher:
 
         except WiimoteException:
             logging.error("Could not connect to wiimote. please try again")
+
+        if not self.wiimote:
+            # Tell user how to connect wiimote
+            self.lcd.clear()
+            self.lcd.message( 'Wiimote \n' )
+            self.lcd.message( 'Not Found' + '\n' )
 
         # Constantly check wiimote for button presses
         loop_count = 0
