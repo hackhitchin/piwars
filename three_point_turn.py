@@ -52,8 +52,8 @@ class ThreePointTurn:
             total_timeout=0.95,
             accelerating_time=0.5,
             line_sensor=self.rear_line_sensor,
-            peak_throttle=self.full_forward,
-            peak_steering=self.straight,
+            max_throttle=self.full_forward,
+            max_steering=self.straight,
             end_throttle=self.slow_forward,
             end_steering=self.straight,
             start_throttle=throttle
@@ -62,8 +62,8 @@ class ThreePointTurn:
         throttle = self.move_segment(
             total_timeout=0.3,
             accelerating_time=0.15,
-            peak_throttle=self.stopped,
-            peak_steering=self.full_left,
+            max_throttle=self.stopped,
+            max_steering=self.full_left,
             end_throttle=self.straight,
             end_steering=self.slow_forward,
             start_throttle=throttle
@@ -73,8 +73,8 @@ class ThreePointTurn:
             total_timeout=0.4,
             accelerating_time=0.2,
             line_sensor=self.front_line_sensor,
-            peak_throttle=self.full_forward,
-            peak_steering=self.straight,
+            max_throttle=self.full_forward,
+            max_steering=self.straight,
             end_throttle=self.slow_forward,
             end_steering=self.straight,
             start_throttle=throttle
@@ -84,9 +84,9 @@ class ThreePointTurn:
             total_timeout=0.75,
             accelerating_time=0.3,
             line_sensor=self.rear_line_sensor,
-            peak_throttle=self.
+            max_throttle=self.
             full_reverse,
-            peak_steering=self.
+            max_steering=self.
             straight,
             end_throttle=self.
             slow_reverse,
@@ -98,8 +98,8 @@ class ThreePointTurn:
         throttle = self.move_segment(
             total_timeout=0.4,
             accelerating_time=0.2,
-            peak_throttle=self.full_forward,
-            peak_steering=self.straight,
+            max_throttle=self.full_forward,
+            max_steering=self.straight,
             end_throttle=self.slow_forward,
             end_steering=self.straight,
             start_throttle=throttle
@@ -108,8 +108,8 @@ class ThreePointTurn:
         throttle = self.move_segment(
             total_timeout=0.3,
             accelerating_time=0.15,
-            peak_throttle=self.stopped,
-            peak_steering=self.full_left,
+            max_throttle=self.stopped,
+            max_steering=self.full_left,
             end_throttle=self.straight,
             end_steering=self.slow_forward,
             start_throttle=throttle
@@ -119,8 +119,8 @@ class ThreePointTurn:
             total_timeout=0.35,
             accelerating_time=0.35,
             line_sensor=self.front_line_sensor,
-            peak_throttle=self.full_forward,
-            peak_steering=self.straight,
+            max_throttle=self.full_forward,
+            max_steering=self.straight,
             end_throttle=self.slow_forward,
             end_steering=self.straight
         )
@@ -129,8 +129,8 @@ class ThreePointTurn:
             total_timeout=0.4,
             accelerating_time=0.2,
             line_sensor=self.rear_line_sensor,
-            peak_throttle=self.slow_forward,
-            peak_steering=self.straight,
+            max_throttle=self.slow_forward,
+            max_steering=self.straight,
             end_throttle=self.stopped,
             end_steering=self.straight
         )
@@ -146,8 +146,8 @@ class ThreePointTurn:
         total_timeout=0,
         accelerating_time=0,
         line_sensor=None,
-        peak_throttle=0,
-        peak_steering=0,
+        max_throttle=0,
+        max_steering=0,
         start_throttle=0,
         end_throttle=0,
         end_steering=0
@@ -167,8 +167,13 @@ class ThreePointTurn:
                 break
 
             if now < acceleration_timeout:
-                throttle, last_throttle_update = self.ease_value(throttle, peak_throttle, self.max_rate, last_throttle_update)
-                steering = peak_steering
+                last_throttle_update = self.ease_value(
+                    start_throttle,
+                    max_throttle,
+                    self.max_rate,
+                    last_throttle_update
+                )
+                steering = max_steering
             else:
                 # easing needs adding
                 throttle = end_throttle
@@ -192,9 +197,13 @@ class ThreePointTurn:
             last_update_time = now
         # if variable is above target
         if current_value > target:
-            new_value = max(target, current_value - rate * (now - last_update_time))
+            new_value = max(
+                target, current_value - rate * (now - last_update_time)
+            )
         # or variable is below target
         if current_value >= target:
-            new_value = max(target, current_value + rate * (now - last_update_time))
+            new_value = max(
+                target, current_value + rate * (now - last_update_time)
+            )
         last_update_time = datetime.now()
         return new_value, last_update_time
