@@ -168,29 +168,32 @@ class ThreePointTurn:
             # if line_sensor and (self.adc.read_voltage(line_sensor) > self.red_min):
             #     break
 
-            if now < acceleration_timeout:
-                throttle, last_throttle_update = self.ease_value(
-                    start_throttle,
-                    max_throttle,
-                    self.max_rate,
-                    last_throttle_update
-                )
-                steering = max_steering
-            else:
-                # easing needs adding
-                throttle = end_throttle
-                steering = end_steering
+            # if now < acceleration_timeout:
+            #     throttle, last_throttle_update = self.ease_value(
+            #         start_throttle,
+            #         max_throttle,
+            #         self.max_rate,
+            #         last_throttle_update
+            #     )
+            #     steering = max_steering
+            # else:
+            #     # easing needs adding
+            #     throttle = end_throttle
+            #     steering = end_steering
+
+            throttle = end_throttle
+            steering = end_steering
 
             self.drive.mix_channels_and_assign(throttle, steering)
 
         # must have got better than usual acceleration.
         # need to slow down before finishing
-        if throttle != end_throttle or steering != end_steering:
-            # needs easing adding
-            throttle = end_throttle
-            # needs easing adding
-            steering = end_steering
-            self.drive.mix_channels_and_assign(throttle, steering)
+        # if throttle != end_throttle or steering != end_steering:
+        #     # needs easing adding
+        #     throttle = end_throttle
+        #     # needs easing adding
+        #     steering = end_steering
+        #     self.drive.mix_channels_and_assign(throttle, steering)
         return throttle
 
     def ease_value(self, current_value, target, rate, last_update_time=None):
