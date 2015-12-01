@@ -158,7 +158,7 @@ class launcher:
 #            logging.info("joystick_state: {0}".format(joystick_state))
 #            logging.info("button state {0}".format(buttons_state))
             # Always show current menu item
-            logging.info("Menu: " + self.menu[self.menu_state])
+            # logging.info("Menu: " + self.menu[self.menu_state])
 
             if loop_count >= self.lcd_loop_skip:
                 # Reset loop count if over
@@ -198,7 +198,7 @@ class launcher:
                     self.menu_item_selected()
                 elif not self.menu_button_pressed and (buttons_state & cwiid.BTN_UP):
                     # Decrement menu index
-                    logging.info("Menu Down Pressed")
+                    logging.info("Menu item: {0}".format(self.menu[self.menu_state]))
                     self.menu_state = self.menu_state - 1
                     if self.menu_state < 0:
                         # Loop back to end of list
@@ -206,7 +206,7 @@ class launcher:
 #                        logging.info(self.menu[self.menu_state])
                 elif not self.menu_button_pressed and (buttons_state & cwiid.BTN_DOWN):
                     # Increment menu index
-                    logging.info("Menu Up Pressed")
+                    logging.info("Menu item: {0}".format(self.menu[self.menu_state]))
                     self.menu_state = self.menu_state + 1
                     if self.menu_state >= len(self.menu):
                         # Loop back to start of list
