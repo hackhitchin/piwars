@@ -50,26 +50,20 @@ class ThreePointTurn:
         throttle = 0
         # forward to turning point
         logging.info("forward to turning point")
-        throttle = self.move_segment(
+        self.move_segment(
             total_timeout=0.95,
             accelerating_time=0.5,
             line_sensor=self.rear_line_sensor,
             max_throttle=self.full_forward,
-            max_steering=self.straight,
-            end_throttle=self.slow_forward,
-            end_steering=self.straight,
-            start_throttle=throttle
+            max_steering=self.straight
         )
         # first left turn
         logging.info("first left turn")
-        throttle = self.move_segment(
+        self.move_segment(
             total_timeout=0.3,
             accelerating_time=0.15,
             max_throttle=self.stopped,
             max_steering=self.full_left,
-            end_throttle=self.straight,
-            end_steering=self.slow_forward,
-            start_throttle=throttle
         )
         # # forward to first side line
         # throttle = self.move_segment(
@@ -148,20 +142,15 @@ class ThreePointTurn:
     def move_segment(
         self,
         total_timeout=0,
-        accelerating_time=0,
         line_sensor=None,
-        max_throttle=0,
-        max_steering=0,
-        start_throttle=0,
-        end_throttle=0,
-        end_steering=0
+        throttle=0,
+        steering=0
     ):
         logging.info("move_segment called with arguments: {0}".format(locals()))
         # Note Line_sensor=0 if no line sensor exit required
         # calculate timeout times
         now = datetime.now()
         end_timeout = now + timedelta(seconds=total_timeout)
-        acceleration_timeout = now + timedelta(seconds=accelerating_time)
 
         last_throttle_update = None
 
@@ -182,9 +171,6 @@ class ThreePointTurn:
             #     # easing needs adding
             #     throttle = end_throttle
             #     steering = end_steering
-
-            throttle = start_throttle
-            steering = max_steering
 
             self.drive.mix_channels_and_assign(throttle, steering)
 
