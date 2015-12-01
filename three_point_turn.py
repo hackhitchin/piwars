@@ -49,6 +49,7 @@ class ThreePointTurn:
         # initialise throttle to 0
         throttle = 0
         # forward to turning point
+        logging.info("forward to turning point")
         throttle = self.move_segment(
             total_timeout=0.95,
             accelerating_time=0.5,
@@ -60,6 +61,7 @@ class ThreePointTurn:
             start_throttle=throttle
         )
         # first left turn
+        logging.info("first left turn")
         throttle = self.move_segment(
             total_timeout=0.3,
             accelerating_time=0.15,
