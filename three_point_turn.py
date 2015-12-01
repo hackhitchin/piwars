@@ -51,7 +51,6 @@ class ThreePointTurn:
         logging.info("forward to turning point")
         self.move_segment(
             total_timeout=0.95,
-            accelerating_time=0.5,
             line_sensor=self.rear_line_sensor,
             throttle=self.full_forward,
             steering=self.straight
@@ -60,7 +59,6 @@ class ThreePointTurn:
         logging.info("first left turn")
         self.move_segment(
             total_timeout=0.3,
-            accelerating_time=0.15,
             throttle=self.stopped,
             steering=self.full_left,
         )
@@ -170,7 +168,7 @@ class ThreePointTurn:
             #     # easing needs adding
             #     throttle = end_throttle
             #     steering = end_steering
-
+            logging.info("mixing channels: {0} : {1}".format(throttle, steering))
             self.drive.mix_channels_and_assign(throttle, steering)
 
         logging.info("Finished manoeuvre")
