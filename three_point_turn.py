@@ -183,8 +183,8 @@ class ThreePointTurn:
             #     throttle = end_throttle
             #     steering = end_steering
 
-            throttle = end_throttle
-            steering = end_steering
+            throttle = start_throttle
+            steering = max_steering
 
             self.drive.mix_channels_and_assign(throttle, steering)
 
