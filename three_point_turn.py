@@ -56,12 +56,12 @@ class ThreePointTurn:
             steering=self.straight
         )
         # first left turn
-        logging.info("first left turn")
-        self.move_segment(
-            total_timeout=0.3,
-            throttle=self.stopped,
-            steering=self.full_left,
-        )
+        # logging.info("first left turn")
+        # self.move_segment(
+        #     total_timeout=0.3,
+        #     throttle=self.stopped,
+        #     steering=self.full_left,
+        # )
         # # forward to first side line
         # throttle = self.move_segment(
         #     total_timeout=0.4,
