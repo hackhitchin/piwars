@@ -150,8 +150,11 @@ class ThreePointTurn:
         end_timeout = now + timedelta(seconds=total_timeout)
 
         last_throttle_update = None
+        logging.info("mixing channels: {0} : {1}".format(throttle, steering))
+        self.drive.mix_channels_and_assign(throttle, steering)
 
         while not self.killed and (datetime.now() < end_timeout):
+            pass
             # If we have a line sensor, check it here. Bail if necesary
             # if line_sensor and (self.adc.read_voltage(line_sensor) > self.red_min):
             #     break
@@ -168,8 +171,6 @@ class ThreePointTurn:
             #     # easing needs adding
             #     throttle = end_throttle
             #     steering = end_steering
-            logging.info("mixing channels: {0} : {1}".format(throttle, steering))
-            self.drive.mix_channels_and_assign(throttle, steering)
 
         logging.info("Finished manoeuvre")
         # must have got better than usual acceleration.
