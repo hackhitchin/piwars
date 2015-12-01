@@ -222,8 +222,8 @@ class launcher:
             time.sleep(0.05)
 
 if __name__ == "__main__":
+    launcher = launcher()
     try:
-        launcher = launcher()
         launcher.run()
     except (Exception, KeyboardInterrupt) as e:
         # Stop any active threads before leaving
