@@ -69,72 +69,72 @@ class ThreePointTurn:
             end_steering=self.slow_forward,
             start_throttle=throttle
         )
-        # forward to first side line
-        throttle = self.move_segment(
-            total_timeout=0.4,
-            accelerating_time=0.2,
-            line_sensor=self.front_line_sensor,
-            max_throttle=self.full_forward,
-            max_steering=self.straight,
-            end_throttle=self.slow_forward,
-            end_steering=self.straight,
-            start_throttle=throttle
-        )
-        # reverse portion to second side line
-        throttle = self.move_segment(
-            total_timeout=0.75,
-            accelerating_time=0.3,
-            line_sensor=self.rear_line_sensor,
-            max_throttle=self.
-            full_reverse,
-            max_steering=self.
-            straight,
-            end_throttle=self.
-            slow_reverse,
-            end_steering=self.
-            straight,
-            start_throttle=throttle
-        )
-        # reverse portion to second side line
-        throttle = self.move_segment(
-            total_timeout=0.4,
-            accelerating_time=0.2,
-            max_throttle=self.full_forward,
-            max_steering=self.straight,
-            end_throttle=self.slow_forward,
-            end_steering=self.straight,
-            start_throttle=throttle
-        )
-        # second left turn
-        throttle = self.move_segment(
-            total_timeout=0.3,
-            accelerating_time=0.15,
-            max_throttle=self.stopped,
-            max_steering=self.full_left,
-            end_throttle=self.straight,
-            end_steering=self.slow_forward,
-            start_throttle=throttle
-        )
-        # return to start
-        throttle = self.move_segment(
-            total_timeout=0.35,
-            accelerating_time=0.35,
-            line_sensor=self.front_line_sensor,
-            max_throttle=self.full_forward,
-            max_steering=self.straight,
-            end_throttle=self.slow_forward,
-            end_steering=self.straight
-        )
-        # enter start box
-        throttle = self.move_segment(
-            total_timeout=0.4,
-            accelerating_time=0.2,
-            line_sensor=self.rear_line_sensor,
-            max_throttle=self.slow_forward,
-            max_steering=self.straight,
-            end_throttle=self.stopped,
-            end_steering=self.straight
-        )
+        # # forward to first side line
+        # throttle = self.move_segment(
+        #     total_timeout=0.4,
+        #     accelerating_time=0.2,
+        #     line_sensor=self.front_line_sensor,
+        #     max_throttle=self.full_forward,
+        #     max_steering=self.straight,
+        #     end_throttle=self.slow_forward,
+        #     end_steering=self.straight,
+        #     start_throttle=throttle
+        # )
+        # # reverse portion to second side line
+        # throttle = self.move_segment(
+        #     total_timeout=0.75,
+        #     accelerating_time=0.3,
+        #     line_sensor=self.rear_line_sensor,
+        #     max_throttle=self.
+        #     full_reverse,
+        #     max_steering=self.
+        #     straight,
+        #     end_throttle=self.
+        #     slow_reverse,
+        #     end_steering=self.
+        #     straight,
+        #     start_throttle=throttle
+        # )
+        # # reverse portion to second side line
+        # throttle = self.move_segment(
+        #     total_timeout=0.4,
+        #     accelerating_time=0.2,
+        #     max_throttle=self.full_forward,
+        #     max_steering=self.straight,
+        #     end_throttle=self.slow_forward,
+        #     end_steering=self.straight,
+        #     start_throttle=throttle
+        # )
+        # # second left turn
+        # throttle = self.move_segment(
+        #     total_timeout=0.3,
+        #     accelerating_time=0.15,
+        #     max_throttle=self.stopped,
+        #     max_steering=self.full_left,
+        #     end_throttle=self.straight,
+        #     end_steering=self.slow_forward,
+        #     start_throttle=throttle
+        # )
+        # # return to start
+        # throttle = self.move_segment(
+        #     total_timeout=0.35,
+        #     accelerating_time=0.35,
+        #     line_sensor=self.front_line_sensor,
+        #     max_throttle=self.full_forward,
+        #     max_steering=self.straight,
+        #     end_throttle=self.slow_forward,
+        #     end_steering=self.straight
+        # )
+        # # enter start box
+        # throttle = self.move_segment(
+        #     total_timeout=0.4,
+        #     accelerating_time=0.2,
+        #     line_sensor=self.rear_line_sensor,
+        #     max_throttle=self.slow_forward,
+        #     max_steering=self.straight,
+        #     end_throttle=self.stopped,
+        #     end_steering=self.straight
+        # )
         # Final set motors to neutral to stop
         self.drive.set_neutral()
         self.stop()
