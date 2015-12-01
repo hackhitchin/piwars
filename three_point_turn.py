@@ -47,23 +47,22 @@ class ThreePointTurn:
         # initiate camera
 
         # initialise throttle to 0
-        throttle = 0
         # forward to turning point
         logging.info("forward to turning point")
         self.move_segment(
             total_timeout=0.95,
             accelerating_time=0.5,
             line_sensor=self.rear_line_sensor,
-            max_throttle=self.full_forward,
-            max_steering=self.straight
+            throttle=self.full_forward,
+            steering=self.straight
         )
         # first left turn
         logging.info("first left turn")
         self.move_segment(
             total_timeout=0.3,
             accelerating_time=0.15,
-            max_throttle=self.stopped,
-            max_steering=self.full_left,
+            throttle=self.stopped,
+            steering=self.full_left,
         )
         # # forward to first side line
         # throttle = self.move_segment(
@@ -174,6 +173,7 @@ class ThreePointTurn:
 
             self.drive.mix_channels_and_assign(throttle, steering)
 
+        logging.info("Finished manoeuvre")
         # must have got better than usual acceleration.
         # need to slow down before finishing
         # if throttle != end_throttle or steering != end_steering:
