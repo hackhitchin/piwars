@@ -150,10 +150,10 @@ class ThreePointTurn:
         end_timeout = now + timedelta(seconds=total_timeout)
 
         last_throttle_update = None
-        logging.info("mixing channels: {0} : {1}".format(throttle, steering))
-        self.drive.mix_channels_and_assign(throttle, steering)
 
         while not self.killed and (datetime.now() < end_timeout):
+            logging.info("mixing channels: {0} : {1}".format(throttle, steering))
+            self.drive.mix_channels_and_assign(throttle, steering)
             time.sleep(0.05)
             pass
             # If we have a line sensor, check it here. Bail if necesary
