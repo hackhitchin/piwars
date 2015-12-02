@@ -7,6 +7,7 @@ from ABE_helpers import ABEHelpers
 from datetime import datetime, timedelta
 import sys
 import logging
+import time
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
@@ -16,9 +17,9 @@ class ThreePointTurn:
         """ Standard Constructor """
         logging.info("Three Point Turn constructor")
         # set up ADC
-        self.i2c_helper = ABEHelpers()
-        self.bus = self.i2c_helper.get_smbus()
-        self.adc = ADCPi(self.bus, 0x6a, 0x6b, 12)
+        #self.i2c_helper = ABEHelpers()
+        #self.bus = self.i2c_helper.get_smbus()
+        #self.adc = ADCPi(self.bus, 0x6a, 0x6b, 12)
 
         # define fixed values
         # red is typically 3.5V
