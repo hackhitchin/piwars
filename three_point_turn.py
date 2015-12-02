@@ -154,6 +154,7 @@ class ThreePointTurn:
         self.drive.mix_channels_and_assign(throttle, steering)
 
         while not self.killed and (datetime.now() < end_timeout):
+            time.sleep(0.05)
             pass
             # If we have a line sensor, check it here. Bail if necesary
             # if line_sensor and (self.adc.read_voltage(line_sensor) > self.red_min):
