@@ -12,6 +12,7 @@ from numpy import interp, clip
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
+
 class StraightLineSpeed:
     def __init__(self, drive):
         """ Standard Constructor """
@@ -28,15 +29,15 @@ class StraightLineSpeed:
         self.full_reverse = -0.5
         self.slow_reverse = -0.1
 
-        self.left_steering = -0.25
-        self.right_steering = 0.25
+        self.left_steering = -0.1
+        self.right_steering = 0.1
         self.straight = 0
         self.distance_sensor = 1
 
         # Voltage value we are aiming for (2 was close, 0.5 was further away)
-        self.nominal_voltage = 0.5
-        self.min_dist_voltage = 2.0
-        self.max_dist_voltage = 0.4
+        self.nominal_distance = 45.0
+        self.distance_range_min = -20.0
+        self.distance_range_max = 20.0
 
         # Drivetrain is passed in
         self.drive = drive
@@ -50,13 +51,13 @@ class StraightLineSpeed:
         """ Main call to run the three point turn script """
         # Drive forward for a set number of seconds keeping distance equal
         logging.info("forward to turning point")
-        self.move_segment( total_timeout=2.0 )
+        self.move_segment(total_timeout=2.0)
 
         # Final set motors to neutral to stop
         self.drive.set_neutral()
         self.stop()
 
-    def move_segment( self, total_timeout=0 ):
+    def move_segment(self, total_timeout=0):
         logging.info("move_segment called with arguments: {0}".format(locals()))
         # Note Line_sensor=0 if no line sensor exit required
         # calculate timeout times
@@ -70,15 +71,22 @@ class StraightLineSpeed:
 
         while not self.killed and (datetime.now() < end_timeout):
             # If we have a line sensor, check it here. Bail if necesary
-            if distance_sensor:
-                voltage = self.adc.read_voltage(distance_sensor)
-                voltage_diff = voltage - self.nominal_voltage
-                steering = interp(
-                        voltage_diff,
-                        [self.min_dist_voltage, self.max_dist_voltage]
+            if self.distance_sensor:
+                voltage = self.adc.read_voltage(self.distance_sensor)
+                # Distance calculation (units = cm)
+                distance = 27.0/voltage
+                distance_dif = distance - self.nominal_distance
+
+                steering = clip(
+                    interp(
+                        distance_dif,
+                        [self.distance_range_min, self.distance_range_max]
                         [self.left_steering, self.right_steering],
-                    )
+                    ),
+                    self.left_steering,
+                    self.right_steering
                 )
+            time.sleep(0.05)
 
             # Had to invert throttle and steering channels to match RC mode
             logging.info("mixing channels: {0} : {1}".format(throttle, steering))
