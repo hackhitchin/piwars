@@ -8,9 +8,10 @@ from datetime import datetime, timedelta
 import sys
 import logging
 import time
-from numpy import interp, clip
+from numpy import interp
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
 
 class Proximity:
     def __init__(self, drive):
@@ -50,13 +51,13 @@ class Proximity:
         """ Main call to run the three point turn script """
         # Drive forward for a set number of seconds keeping distance equal
         logging.info("forward to turning point")
-        self.move_segment( total_timeout=10.0 )
+        self.move_segment(total_timeout=10.0)
 
         # Final set motors to neutral to stop
         self.drive.set_neutral()
         self.stop()
 
-    def move_segment( self, total_timeout=0 ):
+    def move_segment(self, total_timeout=0):
         logging.info("move_segment called with arguments: {0}".format(locals()))
         # Note Line_sensor=0 if no line sensor exit required
         # calculate timeout times
@@ -70,18 +71,22 @@ class Proximity:
 
         while not self.killed and (datetime.now() < end_timeout):
             # If we have a line sensor, check it here. Bail if necesary
-            if distance_sensor:
-                voltage = self.adc.read_voltage(distance_sensor)
+            if self.distance_sensor:
+                voltage = self.adc.read_voltage(self.distance_sensor)
                 voltage_diff = voltage - self.nominal_voltage
                 steering = interp(
-                        voltage_diff,
-                        [self.min_dist_voltage, self.max_dist_voltage]
-                        [self.left_steering, self.right_steering],
-                    )
+                    voltage_diff,
+                    [self.min_dist_voltage, self.max_dist_voltage]
+                    [self.left_steering, self.right_steering],
                 )
 
             # Had to invert throttle and steering channels to match RC mode
-            logging.info("mixing channels: {0} : {1}".format(throttle, steering))
+            logging.info(
+                "mixing channels: {0} : {1}".format(
+                    throttle,
+                    steering
+                )
+            )
             self.drive.mix_channels_and_assign(steering, throttle)
             time.sleep(0.05)
 
