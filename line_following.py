@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import sys
 import logging
 import time
-from numpy import interp, clip
+from numpy import interp
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
@@ -71,8 +71,8 @@ class Proximity:
 
         while not self.killed and (datetime.now() < end_timeout):
             # If we have a line sensor, check it here. Bail if necesary
-            if distance_sensor:
-                voltage = self.adc.read_voltage(distance_sensor)
+            if self.distance_sensor:
+                voltage = self.adc.read_voltage(self.distance_sensor)
                 voltage_diff = voltage - self.nominal_voltage
                 steering = interp(
                     voltage_diff,
