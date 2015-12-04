@@ -30,7 +30,7 @@ class launcher:
         self.menu += ["Quit Challenge"]
         self.menu += ["Power Off Pi"]
 
-        self.menu_quit_challenge = 3
+        self.menu_quit_challenge = 5
 
         # default menu item is remote control
         self.menu_state = 0
@@ -45,7 +45,7 @@ class launcher:
         self.GPIO = GPIO
 
         # LCD Display
-        self.lcd = Adafruit_CharLCD( pin_rs=25, pin_e=24, pins_db=[23, 17, 27, 22], GPIO=self.GPIO )
+        self.lcd = Adafruit_CharLCD(pin_rs=25, pin_e=24, pins_db=[23, 17, 27, 22], GPIO=self.GPIO)
         self.lcd.begin(16, 1)
         self.lcd.clear()
         self.lcd.message('Initiating...')
@@ -58,7 +58,7 @@ class launcher:
         # If ANYTHING selected, we gracefully
         # kill any challenge threads open
         self.stop_threads()
-        if self.menu[self.menu_state]=="Remote Control":
+        if self.menu[self.menu_state] == "Remote Control":
             # Start the remote control
             logging.info("Entering into Remote Control Mode")
             self.challenge = rc.rc(self.drive, self.wiimote)
@@ -70,7 +70,7 @@ class launcher:
                 self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
-        elif self.menu[self.menu_state]=="Three Point Turn":
+        elif self.menu[self.menu_state] == "Three Point Turn":
             # Start the three point turn challenge
             logging.info("Starting Three Point Turn Challenge")
             self.challenge = ThreePointTurn(self.drive)
@@ -82,7 +82,7 @@ class launcher:
                 self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
-        elif self.menu[self.menu_state]=="Straight Line Speed":
+        elif self.menu[self.menu_state] == "Straight Line Speed":
             # Start the straight line speed challenge
             logging.info("Starting Straight Line Speed Challenge")
             self.challenge = StraightLineSpeed(self.drive)
@@ -91,7 +91,7 @@ class launcher:
                 self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
-        elif self.menu[self.menu_state]=="Line Following":
+        elif self.menu[self.menu_state] == "Line Following":
             # Start the Line Following challenge
             logging.info("Starting Line Following Challenge")
             self.challenge = LineFollowing(self.drive)
@@ -100,7 +100,7 @@ class launcher:
                 self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
-        elif self.menu[self.menu_state]=="Proximity":
+        elif self.menu[self.menu_state] == "Proximity":
             # Start the Proximity challenge
             logging.info("Starting Proximity Challenge")
             self.challenge = Proximity(self.drive)
@@ -109,11 +109,11 @@ class launcher:
                 self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default
             self.menu_state = self.menu_quit_challenge
-        elif self.menu[self.menu_state]=="Quit Challenge":
+        elif self.menu[self.menu_state] == "Quit Challenge":
             # Reset menu item back to top of list
             self.menu_state = 0
             logging.info("No Challenge Challenge Thread")
-        elif self.menu[self.menu_state]=="Power Off Pi":
+        elif self.menu[self.menu_state] == "Power Off Pi":
             # Power off the raspberry pi safely
             # by sending shutdown command to terminal
             logging.info("Shutting Down Pi")
@@ -153,8 +153,8 @@ class launcher:
         """ Main Running loop controling bot mode and menu state """
         # Tell user how to connect wiimote
         self.lcd.clear()
-        self.lcd.message( 'Press 1+2 \n' )
-        self.lcd.message( 'On Wiimote' )
+        self.lcd.message('Press 1+2 \n')
+        self.lcd.message('On Wiimote')
 
         # Initiate the drivetrain
         self.drive = drivetrain.DriveTrain(pwm_i2c=0x40)
@@ -168,8 +168,8 @@ class launcher:
         if not self.wiimote:
             # Tell user how to connect wiimote
             self.lcd.clear()
-            self.lcd.message( 'Wiimote \n' )
-            self.lcd.message( 'Not Found' + '\n' )
+            self.lcd.message('Wiimote \n')
+            self.lcd.message('Not Found' + '\n')
 
         # Constantly check wiimote for button presses
         loop_count = 0
@@ -190,31 +190,37 @@ class launcher:
                 self.lcd.clear()
                 if self.shutting_down:
                     # How current menu item on LCD
-                    self.lcd.message( 'Shutting Down Pi' + '\n' )
+                    self.lcd.message('Shutting Down Pi' + '\n')
                 else:
                     # How current menu item on LCD
-                    self.lcd.message( self.menu[self.menu_state] + '\n' )
+                    self.lcd.message(self.menu[self.menu_state] + '\n')
 
                     # If challenge is running, show it on line 2
                     if self.challenge:
-                        self.lcd.message( '[' + self.challenge_name + ']' )
+                        self.lcd.message('[' + self.challenge_name + ']')
 
             # Increment Loop Count
             loop_count = loop_count + 1
 
             # Test if B button is pressed
-            if joystick_state is None or (buttons_state & cwiid.BTN_B) or (nunchuk_buttons_state & cwiid.NUNCHUK_BTN_Z):
+            if (
+                joystick_state is None
+                or (buttons_state & cwiid.BTN_B)
+                or (nunchuk_buttons_state & cwiid.NUNCHUK_BTN_Z)
+            ):
                 # No nunchuk joystick detected or B or Z button
                 # pressed, must go into neutral for safety
-                logging.info("Neutral")
+#                logging.info("Neutral")
                 self.set_neutral(self.drive, self.wiimote)
             else:
                 # Enable motors
                 self.set_drive(self.drive, self.wiimote)
 
-            if ((buttons_state & cwiid.BTN_A)
+            if (
+                (buttons_state & cwiid.BTN_A)
                 or (buttons_state & cwiid.BTN_UP)
-                or (buttons_state & cwiid.BTN_DOWN)):
+                or (buttons_state & cwiid.BTN_DOWN)
+            ):
                 # Looking for state change only
                 if not self.menu_button_pressed and (buttons_state & cwiid.BTN_A):
                     # User wants to select a menu item
