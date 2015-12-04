@@ -34,10 +34,12 @@ class DriveTrain():
         self.servo_low_max = int(self.servo_mid + (self.servo_full_max-self.servo_mid) / speed_divisor)
 
         # Skittle launcher servos
-        self.skittle_left_servo_closed = 1600
-        self.skittle_left_servo_open = 1400
-        self.skittle_right_servo_closed = 1600
-        self.skittle_right_servo_open = 1400
+        self.skittle_left_servo_closed = 1400  # 1600
+        self.skittle_left_servo_open = 1200  # 1400
+        self.skittle_right_servo_closed = 1400  # 1600
+        self.skittle_right_servo_open = 1200  # 1400
+        self.skittle_left_servo_init = 1300
+        self.skittle_right_servo_init = 1300
 
         # Skittle launcher motors
         self.skittle_left_motor_stopped = 1000
