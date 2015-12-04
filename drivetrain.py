@@ -42,8 +42,8 @@ class DriveTrain():
         # Skittle launcher motors
         self.skittle_left_motor_stopped = 1000
         self.skittle_left_motor_full_speed = 2000
-        self.skittle_left_motor_stopped = 1000
-        self.skittle_left_motor_full_speed = 2000
+        self.skittle_right_motor_stopped = 1000
+        self.skittle_right_motor_full_speed = 2000
 
         # Proximity probe servo limites
         self.proximity_servo_min = 1000
