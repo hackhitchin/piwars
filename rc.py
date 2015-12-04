@@ -32,16 +32,16 @@ class rc:
                 self.drive.set_low_speed()
 
             if (buttons_state & cwiid.BTN_MINUS):
-                self.drive.drive.set_skittle_motors_on()
+                self.drive.set_skittle_motors_on()
 
             if (buttons_state & cwiid.BTN_PLUS):
-                self.drive.drive.set_skittle_motors_off()
+                self.drive.set_skittle_motors_off()
 
             if (buttons_state & cwiid.BTN_1):
-                self.drive.drive.set_skittle_arms_open()
+                self.drive.set_skittle_arms_open()
 
             if (buttons_state & cwiid.BTN_2):
-                self.drive.drive.set_skittle_skittle_arms_open()
+                self.drive.set_skittle_skittle_arms_open()
 
             # Get the normalised joystick postion as a tuple of
             # (throttle, steering), where values are in the range -1 to 1
