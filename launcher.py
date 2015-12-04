@@ -9,6 +9,10 @@ from wiimote import Wiimote, WiimoteException
 from Adafruit_CharLCD import Adafruit_CharLCD
 import threading
 import rc
+from three_point_turn import ThreePointTurn
+from proximity import Proximity
+from line_following import LineFollowing
+from straight_line_speed import StraightLineSpeed
 import RPi.GPIO as GPIO
 
 
@@ -21,6 +25,8 @@ class launcher:
         self.menu = ["Remote Control"]
         self.menu += ["Three Point Turn"]
         self.menu += ["Straight Line Speed"]
+        self.menu += ["Line Following"]
+        self.menu += ["Proximity"]
         self.menu += ["Quit Challenge"]
         self.menu += ["Power Off Pi"]
 
@@ -39,7 +45,6 @@ class launcher:
         self.GPIO = GPIO
 
         # LCD Display
-        #self.lcd = Adafruit_CharLCD( pin_rs=25, pin_e=24, pins_db=[23, 17, 21, 22], self.GPIO )
         self.lcd = Adafruit_CharLCD( pin_rs=25, pin_e=24, pins_db=[23, 17, 27, 22], GPIO=self.GPIO )
         self.lcd.begin(16, 1)
         self.lcd.clear()
@@ -50,7 +55,7 @@ class launcher:
 
     def menu_item_selected(self):
         """Select the current menu item"""
-        # If ANYTHING selected, we gracefully 
+        # If ANYTHING selected, we gracefully
         # kill any challenge threads open
         self.stop_threads()
         if self.menu[self.menu_state]=="Remote Control":
@@ -68,7 +73,10 @@ class launcher:
         elif self.menu[self.menu_state]=="Three Point Turn":
             # Start the three point turn challenge
             logging.info("Starting Three Point Turn Challenge")
-            self.challenge = None
+            self.challenge = ThreePointTurn(self.drive)
+            # Create and start a new thread running the remote control script
+            self.challenge_thread = threading.Thread(target=self.challenge.run)
+            self.challenge_thread.start()
             # Ensure we know what challenge is running
             if self.challenge:
                 self.challenge_name = self.menu[self.menu_state]
@@ -77,7 +85,25 @@ class launcher:
         elif self.menu[self.menu_state]=="Straight Line Speed":
             # Start the straight line speed challenge
             logging.info("Starting Straight Line Speed Challenge")
-            self.challenge = None
+            self.challenge = StraightLineSpeed(self.drive)
+            # Ensure we know what challenge is running
+            if self.challenge:
+                self.challenge_name = self.menu[self.menu_state]
+            # Move menu index to quit challenge by default
+            self.menu_state = self.menu_quit_challenge
+        elif self.menu[self.menu_state]=="Line Following":
+            # Start the Line Following challenge
+            logging.info("Starting Line Following Challenge")
+            self.challenge = LineFollowing(self.drive)
+            # Ensure we know what challenge is running
+            if self.challenge:
+                self.challenge_name = self.menu[self.menu_state]
+            # Move menu index to quit challenge by default
+            self.menu_state = self.menu_quit_challenge
+        elif self.menu[self.menu_state]=="Proximity":
+            # Start the Proximity challenge
+            logging.info("Starting Proximity Challenge")
+            self.challenge = Proximity(self.drive)
             # Ensure we know what challenge is running
             if self.challenge:
                 self.challenge_name = self.menu[self.menu_state]
@@ -124,7 +150,7 @@ class launcher:
         self.set_neutral(self.drive, self.wiimote)
 
     def run(self):
-        """ Main Running loop controling bot mode and menu state """        
+        """ Main Running loop controling bot mode and menu state """
         # Tell user how to connect wiimote
         self.lcd.clear()
         self.lcd.message( 'Press 1+2 \n' )
@@ -155,7 +181,7 @@ class launcher:
 #            logging.info("joystick_state: {0}".format(joystick_state))
 #            logging.info("button state {0}".format(buttons_state))
             # Always show current menu item
-            logging.info("Menu: " + self.menu[self.menu_state])
+            # logging.info("Menu: " + self.menu[self.menu_state])
 
             if loop_count >= self.lcd_loop_skip:
                 # Reset loop count if over
@@ -195,20 +221,18 @@ class launcher:
                     self.menu_item_selected()
                 elif not self.menu_button_pressed and (buttons_state & cwiid.BTN_UP):
                     # Decrement menu index
-                    logging.info("Menu Down Pressed")
                     self.menu_state = self.menu_state - 1
                     if self.menu_state < 0:
                         # Loop back to end of list
                         self.menu_state = len(self.menu)-1
-#                        logging.info(self.menu[self.menu_state])
+                    logging.info("Menu item: {0}".format(self.menu[self.menu_state]))
                 elif not self.menu_button_pressed and (buttons_state & cwiid.BTN_DOWN):
                     # Increment menu index
-                    logging.info("Menu Up Pressed")
                     self.menu_state = self.menu_state + 1
                     if self.menu_state >= len(self.menu):
                         # Loop back to start of list
                         self.menu_state = 0
-#                        logging.info(self.menu[self.menu_state])
+                    logging.info("Menu item: {0}".format(self.menu[self.menu_state]))
 
                 # Only change button state AFTER we have used it
                 self.menu_button_pressed = True
@@ -219,8 +243,8 @@ class launcher:
             time.sleep(0.05)
 
 if __name__ == "__main__":
+    launcher = launcher()
     try:
-        launcher = launcher()
         launcher.run()
     except (Exception, KeyboardInterrupt) as e:
         # Stop any active threads before leaving
