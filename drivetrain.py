@@ -6,7 +6,8 @@ from numpy import interp, clip
 
 class DriveTrain():
     """Instantiate a 2WD drivetrain, utilising 2x ESCs,
-    controlled using a 2 axis (throttle, steering) system + skittle accessories"""
+    controlled using a 2 axis (throttle, steering)
+    system + skittle accessories"""
     def __init__(
         self,
         pwm_i2c=0x40,
@@ -42,10 +43,10 @@ class DriveTrain():
         self.skittle_right_servo_init = 1300
 
         # Skittle launcher motors
-        self.skittle_left_motor_stopped = 1000
-        self.skittle_left_motor_full_speed = 2000
-        self.skittle_right_motor_stopped = 1000
-        self.skittle_right_motor_full_speed = 2000
+        self.skittle_left_motor_stopped = 2000
+        self.skittle_left_motor_full_speed = 1000
+        self.skittle_right_motor_stopped = 2000
+        self.skittle_right_motor_full_speed = 1000
 
         # Proximity probe servo limites
         self.proximity_servo_min = 1000
