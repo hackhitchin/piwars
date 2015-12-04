@@ -41,7 +41,7 @@ class rc:
                 self.drive.set_skittle_arms_open()
 
             if (buttons_state & cwiid.BTN_2):
-                self.drive.set_skittle_arms_open()
+                self.drive.set_skittle_arms_closed()
 
             # Get the normalised joystick postion as a tuple of
             # (throttle, steering), where values are in the range -1 to 1
