@@ -37,8 +37,8 @@ class DriveTrain():
         # Skittle launcher servos
         self.skittle_left_servo_closed = 1400  # 1600
         self.skittle_left_servo_open = 1200  # 1400
-        self.skittle_right_servo_closed = 1400  # 1600
-        self.skittle_right_servo_open = 1200  # 1400
+        self.skittle_right_servo_closed = 1300
+        self.skittle_right_servo_open = 1700
         self.skittle_left_servo_init = 1300
         self.skittle_right_servo_init = 1300
 
