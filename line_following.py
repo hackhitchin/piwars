@@ -13,7 +13,7 @@ from numpy import interp
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
-class Proximity:
+class LineFollowing:
     def __init__(self, drive):
         """ Standard Constructor """
         logging.info("Straight Line Speed constructor")
