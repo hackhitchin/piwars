@@ -26,8 +26,8 @@ class ThreePointTurn:
         self.red_min = 3
         self.red = 3.5
         self.stopped = 0
-        self.full_forward = 0.3
-        self.half_forward = 0.15
+        self.full_forward = 0.4
+        self.half_forward = 0.3
         self.slow_forward = 0.1
         self.full_reverse = -0.3
         self.half_reverse = -0.15
