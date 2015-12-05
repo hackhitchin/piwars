@@ -87,6 +87,8 @@ class launcher:
             logging.info("Starting Straight Line Speed Challenge")
             self.challenge = StraightLineSpeed(self.drive)
             # Ensure we know what challenge is running
+            self.challenge_thread = threading.Thread(target=self.challenge.run)
+            self.challenge_thread.start()
             if self.challenge:
                 self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default
@@ -105,6 +107,8 @@ class launcher:
             logging.info("Starting Proximity Challenge")
             self.challenge = Proximity(self.drive)
             # Ensure we know what challenge is running
+            self.challenge_thread = threading.Thread(target=self.challenge.run)
+            self.challenge_thread.start()
             if self.challenge:
                 self.challenge_name = self.menu[self.menu_state]
             # Move menu index to quit challenge by default

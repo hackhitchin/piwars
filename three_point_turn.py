@@ -54,7 +54,7 @@ class ThreePointTurn:
         # forward to turning point
         logging.info("forward to turning point")
         self.move_segment(
-            total_timeout=0.6,
+            total_timeout=4,
             line_sensor=self.rear_line_sensor,
             throttle=self.full_forward,
             steering=self.straight
@@ -67,50 +67,18 @@ class ThreePointTurn:
             throttle=self.slow_forward,
             steering=self.straight
         )
-        # required slow speed braking
-        logging.info("aggressive break")
-        self.move_segment(
-            total_timeout=0.25,
-            line_sensor=self.rear_line_sensor,
-            throttle=self.half_reverse,
-            steering=self.straight
-        )
         # first left turn
         logging.info("first left turn")
         self.move_segment(
-            total_timeout=0.1,
-            throttle=self.stopped,
+            total_timeout=0.3,
+            throttle=self.slow_forward,
             steering=self.full_left
         )
-        # Slow left turn (braking)
-        #logging.info("first left turn")
-        #self.move_segment(
-        #    total_timeout=0.2,
-        #    throttle=self.stopped,
-        #    steering=self.slow_left
-        # )
         # forward to first side line
         logging.info("forward to first side line")
         self.move_segment(
-            total_timeout=0.2,
-            line_sensor=self.front_line_sensor,
+            total_timeout=1.25,
             throttle=self.full_forward,
-            steering=self.straight
-        )
-        # required slow speed braking
-        #logging.info("appling break")
-        #self.move_segment(
-        #    total_timeout=0.1,
-        #    line_sensor=self.rear_line_sensor,
-        #    throttle=self.slow_forward,
-        #    steering=self.straight
-        #)
-        # reverse portion to second side line
-        logging.info("reverse to second side line")
-        self.move_segment(
-            total_timeout=0.5,
-            line_sensor=self.rear_line_sensor,
-            throttle=self.full_reverse,
             steering=self.straight
         )
         # required slow speed braking
@@ -121,29 +89,44 @@ class ThreePointTurn:
             throttle=self.slow_forward,
             steering=self.straight
         )
-
+        # reverse portion to second side line
+        logging.info("reverse to second side line")
+        self.move_segment(
+            total_timeout=1.4,
+            line_sensor=self.rear_line_sensor,
+            throttle=self.full_reverse,
+            steering=self.straight
+        )
         # required slow speed braking
-        #logging.info("appling break")
-        #self.move_segment(
-        #    total_timeout=0.1,
-        #    line_sensor=self.rear_line_sensor,
-        #    throttle=self.slow_reverse,
-        #    steering=self.straight
-        #)
-        # throttle = self.move_segment(
-        #     total_timeout=0.75,
-        #     accelerating_time=0.3,
-        #     line_sensor=self.rear_line_sensor,
-        #     max_throttle=self.
-        #     full_reverse,
-        #     max_steering=self.
-        #     straight,
-        #     end_throttle=self.
-        #     slow_reverse,
-        #     end_steering=self.
-        #     straight,
-        #     start_throttle=throttle
-        # )
+        logging.info("appling break")
+        self.move_segment(
+            total_timeout=0.4,
+            line_sensor=self.rear_line_sensor,
+            throttle=self.slow_forward,
+            steering=self.straight
+        )
+
+        # return to mid point
+        #logging.info("return to mid point")
+        self.move_segment(
+            total_timeout=1.1,
+            line_sensor=self.rear_line_sensor,
+            throttle=self.full_forward,
+            steering=self.straight
+        )
+        # turn back to start
+        self.move_segment(
+            total_timeout=0.3,
+            throttle=self.slow_forward,
+            steering=self.full_left 
+        )
+        
+        # Return to start box
+        self.move_segment(
+            total_timeout=4.5,
+            throttle=self.full_forward,
+            steering=self.straight
+        )
         # # reverse portion to second side line
         # throttle = self.move_segment(
         #     total_timeout=0.4,
