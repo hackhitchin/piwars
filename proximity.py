@@ -70,6 +70,7 @@ class Proximity:
 
         # Drive forward at half speed until we get reasonably close
         distance = self.get_distance()
+        logging.info("distance: {0}".format(distance))
         time.sleep(0.05)
         while not self.killed and (distance > self.distance_threshold):
             self.drive.mix_channels_and_assign(self.straight, self.full_forward)
