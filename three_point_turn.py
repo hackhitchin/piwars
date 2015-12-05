@@ -217,9 +217,9 @@ class ThreePointTurn:
             # Swapped steering/throttle
             self.drive.mix_channels_and_assign(steering, throttle)
             # If we have a line sensor, check it here. Bail if necesary
-            if line_sensor and (self.adc.read_voltage(line_sensor) > self.red_min):
-                logging.info("Line Detected")
-                break
+            # if line_sensor and (self.adc.read_voltage(line_sensor) > self.red_min):
+            #     logging.info("Line Detected")
+            #     break
 
             # if now < acceleration_timeout:
             #     throttle, last_throttle_update = self.ease_value(
