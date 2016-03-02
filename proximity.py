@@ -22,10 +22,10 @@ class Proximity:
 
         # define fixed values
         self.stopped = 0
-        self.full_forward = 0.5
-        self.slow_forward = 0.1
+        self.full_forward = 0.4
+        self.slow_forward = 0.3
         self.full_reverse = -0.5
-        self.slow_reverse = -0.1
+        self.slow_reverse = -0.25
 
         self.left_steering = -0.25
         self.right_steering = 0.25
@@ -33,8 +33,8 @@ class Proximity:
         self.distance_sensor = 1
 
         # Voltage value we are aiming for (2 was close, 0.5 was further away)
-        self.distance_threshold = 30.0
-        self.distance_required = 0.5
+        self.distance_threshold = 50.0
+        self.distance_required = 17.0
 
         # Drivetrain is passed in
         self.drive = drive
@@ -51,6 +51,7 @@ class Proximity:
         self.move_segment()
 
         # Final set motors to neutral to stop
+        logging.info("Finished Event")
         self.drive.set_neutral()
 
     def get_distance(self):
@@ -75,12 +76,23 @@ class Proximity:
         while not self.killed and (distance > self.distance_threshold):
             self.drive.mix_channels_and_assign(self.straight, self.full_forward)
             distance = self.get_distance()
+            logging.info("F: distance: {0}".format(distance))
             time.sleep(0.05)
+
+        self.drive.set_neutral()
+        time.sleep(0.05)
+        logging.info("Entering Half Speed")
 
         # Drive forward at slow/min speed until we get very close
         while not self.killed and (distance > self.distance_required):
             self.drive.mix_channels_and_assign(self.straight, self.slow_forward)
             distance = self.get_distance()
+            logging.info("S: distance: {0}".format(distance))
             time.sleep(0.05)
 
+        # Ever so slight brake
+        self.drive.mix_channels_and_assign(self.straight, self.slow_reverse)
+        time.sleep(0.05)
+        self.drive.set_neutral()
+        time.sleep(0.05)
         logging.info("Finished manoeuvre")

@@ -24,14 +24,14 @@ class StraightLineSpeed:
 
         # define fixed values
         self.stopped = 0
-        self.full_forward = 0.5
+        self.full_forward = 1
         self.slow_forward = 0.1
         self.full_reverse = -0.5
         self.slow_reverse = -0.1
 
         self.left_steering = -0.1
         self.right_steering = 0.1
-        self.straight = 0
+        self.straight = 0.05
         self.distance_sensor = 1
 
         # Voltage value we are aiming for (2 was close, 0.5 was further away)
@@ -71,26 +71,25 @@ class StraightLineSpeed:
 
         while not self.killed and (datetime.now() < end_timeout):
             # If we have a line sensor, check it here. Bail if necesary
-            if self.distance_sensor:
-                voltage = self.adc.read_voltage(self.distance_sensor)
-                # Distance calculation (units = cm)
-                distance = 27.0/voltage
-                distance_dif = distance - self.nominal_distance
-
-                steering = clip(
-                    interp(
-                        distance_dif,
-                        [self.distance_range_min, self.distance_range_max]
-                        [self.left_steering, self.right_steering],
-                    ),
-                    self.left_steering,
-                    self.right_steering
-                )
+            #if self.distance_sensor:
+            #    voltage = self.adc.read_voltage(self.distance_sensor)
+            #    # Distance calculation (units = cm)
+            #    distance = 27.0/voltage
+            #    distance_dif = distance - self.nominal_distance
+            #
+            #    steering = clip(
+            #        interp(
+            #            distance_dif,
+            #            [self.distance_range_min, self.distance_range_max]
+            #            [self.left_steering, self.right_steering],
+            #        ),
+            #        self.left_steering,
+            #        self.right_steering
+            #    )
             time.sleep(0.05)
 
             # Had to invert throttle and steering channels to match RC mode
             logging.info("mixing channels: {0} : {1}".format(throttle, steering))
             self.drive.mix_channels_and_assign(steering, throttle)
-            time.sleep(0.05)
 
         logging.info("Finished manoeuvre")

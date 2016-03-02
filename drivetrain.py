@@ -137,11 +137,11 @@ class DriveTrain():
             self.servo_max
         )
 
-        logging.info(
-            "output pulse left: {0} output pulse right : {1}".format(
-                output_pulse_left, output_pulse_right
-            )
-        )
+        # logging.info(
+        #    "output pulse left: {0} output pulse right : {1}".format(
+        #        output_pulse_left, output_pulse_right
+        #    )
+        #)
 
         # Set the servo pulses for left and right channels
         self.set_servo_pulse(self.channels['left'], output_pulse_left)
